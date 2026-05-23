@@ -1,21 +1,188 @@
-<!DOCTYPE html>
-<html lang="pt-pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RD Logistics | Calculadora</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { background: #000; color: white; font-family: 'Orbitron', sans-serif; padding: 50px; }
-        .software-card { background: #0a0a0a; padding: 40px; border-radius: 15px; border: 1px solid #222; max-width: 600px; margin: auto; }
-        input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: white; margin: 20px 0; border-radius: 8px; font-size: 1.2rem; }
-    </style>
-</head>
-<body>
-    <div class="software-card">
-        <h2>Calculadora de Engenharia</h2>
-        <input type="number" id="areaInput" placeholder="Inserir área em m²">
-        <div id="resultado">TOTAL: 0.00€</div>
+
+
+    <!DOCTYPE html>
+    <html lang="pt-pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RD Logistics | Calculadora</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;600;700&display=swap" rel="stylesheet">
+        <style>
+            :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; }
+            body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; overflow-x: hidden; }
+            .container { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 30px; padding: 40px; max-width: 1400px; margin: auto; }
+            .software-card { background: #0a0a0a; padding: 35px; border-radius: 15px; border: 1px solid #222; border-left: 6px solid var(--rd-red); position: relative; }
+            input { width: 100%; padding: 16px; margin: 15px 0; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-size: 1.3rem; font-family: 'Orbitron'; text-align: center; }
+            .budget-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+            .budget-table th { text-align: left; padding: 12px; color: #666; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #222; }
+            .budget-table td { padding: 14px 12px; border-bottom: 1px solid #111; font-size: 0.95rem; }
+            .total-row { font-size: 1.25rem; font-weight: bold; color: var(--rd-red); font-family: 'Orbitron'; }
+            .sidebar-summary { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; height: fit-content; }
+            .btn-whatsapp-calc { width: 100%; background: #25D366; color: white; border: none; padding: 16px; font-family: 'Orbitron'; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 10px; text-transform: uppercase; }
+
+            /* ---- ANIMAÇÃO DA CARRINHA VERMELHA RD ---- */
+            .highway-container { width: 100%; height: 60px; background: #070707; border-top: 1px solid #111; border-bottom: 2px dashed #333; position: relative; overflow: hidden; margin-top: 25px; border-radius: 6px; }
+            .delivery-truck { position: absolute; bottom: 12px; left: -100px; width: 70px; height: 32px; animation: driveTruck 12s infinite linear; display: flex; align-items: flex-end; }
+            .truck-body { background: #FF0000; width: 48px; height: 32px; border-radius: 4px 2px 0 0; position: relative; box-shadow: 0 0 10px rgba(255,0,0,0.4); }
+            .truck-cabin { background: #cc0000; width: 18px; height: 22px; border-radius: 0 10px 4px 0; position: relative; display: flex; align-items: flex-start; justify-content: flex-end; }
+            .truck-window { background: #00d2ff; width: 8px; height: 8px; border-radius: 0 4px 0 0; margin-top: 3px; margin-right: 2px; opacity: 0.8; box-shadow: 0 0 4px #00d2ff; }
+            .truck-wheel { background: #111; border: 2px solid #444; width: 12px; height: 12px; border-radius: 50%; position: absolute; bottom: -6px; animation: spinWheel 0.5s infinite linear; }
+            .wheel-front { right: 4px; } .wheel-back { left: 8px; }
+            .truck-headlight { position: absolute; right: -4px; top: 12px; width: 4px; height: 6px; background: #fff; border-radius: 0 2px 2px 0; box-shadow: 8px 0 15px #fff; }
+
+            @keyframes driveTruck { 0% { left: -100px; } 100% { left: calc(100% + 100px); } }
+            @keyframes spinWheel { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+    </head>
+    <body>
+    
+<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
+                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
+                System Online | Secure Encrypted
+            </span>
+        </div>
+        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 4px; border: 1px solid #222; overflow: hidden;">
+            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #300000 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #00d2ff 0%, #002d3a 100%); filter: drop-shadow(0 0 4px #00d2ff); animation: orbitH2 4s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #fff 0%, #444 100%); filter: drop-shadow(0 0 3px #fff); animation: orbitH3 2.5s infinite linear;"></div>
+        </div>
     </div>
-</body>
-</html>
+    <style>
+        @keyframes orbitH1 { 0% { transform: rotate(0deg) translateX(15px); } 100% { transform: rotate(360deg) translateX(15px); } }
+        @keyframes orbitH2 { 0% { transform: rotate(360deg) translateX(22px); } 100% { transform: rotate(0deg) translateX(22px); } }
+        @keyframes orbitH3 { 0% { transform: rotate(120deg) translateX(10px); } 100% { transform: rotate(480deg) translateX(10px); } }
+        @keyframes pulseGlow { 0% { opacity: 0.4; filter: drop-shadow(0 0 1px #25D366); } 100% { opacity: 1; filter: drop-shadow(0 0 5px #25D366); } }
+        nav { display: flex; gap: 25px; align-items: center; }
+        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
+        nav a:hover, nav a.active { color: #FF0000; }
+    </style>
+    <nav>
+        <a href="/" id="nav-home">E-Commerce</a>
+        <a href="/calc" id="nav-calc" style="color: #00d2ff; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
+        <a href="/pagamento" id="nav-pay" style="color: #25D366; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+    </nav>
+</header>
+
+        <div class="container">
+            <div class="software-card">
+                <h2><i class="fa-solid fa-calculator" style="color: var(--rd-red);"></i> Central de Engenharia Avançada</h2>
+                <span style="font-size: 0.8rem; color:#555; font-family:'Orbitron';">INSIRA A ÁREA DA OBRA EM METROS QUADRADOS (M²)</span>
+                <input type="number" id="areaInput" value="50" oninput="calcularOrcamentoCompletoV3()">
+                
+                <div class="highway-container">
+                    <div class="delivery-truck">
+                        <div class="truck-body"><div class="truck-wheel wheel-back"></div></div>
+                        <div class="truck-cabin">
+                            <div class="truck-window"></div>
+                            <div class="truck-headlight"></div>
+                            <div class="truck-wheel wheel-front"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultadoBloco" style="margin-top: 15px;">
+                    <table class="budget-table">
+                        <thead>
+                            <tr><th>Insumo Requisitado</th><th>Quantidade</th><th>Preço Base</th></tr>
+                        </thead>
+                        <tbody id="tabela-corpo"></tbody>
+                        <tbody>
+                            <tr style="background: #0f0f0f;">
+                                <td class="total-row" style="padding: 20px 12px;">TOTAL ESTIMADO</td>
+                                <td></td>
+                                <td class="total-row" id="total-geral" style="text-align: right; padding: 20px 12px;">0.00€</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-whatsapp-calc" id="whatsappBtnCalc"><i class="fa-brands fa-whatsapp"></i> ENVIAR ORÇAMENTO VIA WHATSAPP</button>
+                </div>
+            </div>
+            <div class="sidebar-summary">
+                <h3 style="font-family:'Orbitron'; color: var(--nexus-blue); margin-top:0;"><i class="fa-solid fa-circle-nodes"></i> Contexto Técnico</h3>
+                <p style="color:#666; font-size:0.9rem;">Insira os metros quadrados da estrutura para computar os materiais reais e enviar o manifesto ao suporte.</p>
+            </div>
+        </div>
+        <script>
+            document.getElementById('nav-calc').className = 'active';
+            function calcularOrcamentoCompletoV3() {
+                const area = parseFloat(document.getElementById('areaInput').value) || 0;
+                const P_PLACA = 12.50; const P_MONTANTE = 3.80; const P_RAIA = 3.20;
+                const P_PARAFUSO_PM = 0.05; const P_PARAFUSO_LN = 0.04; const P_MASSA = 1.20;
+                const P_MANTA = 4.50; const P_FITA = 0.15; const P_TRATAMENTO = 0.65;
+
+                const qPla = Math.ceil(area / 2.88); const qMon = Math.ceil(area * 2.1); const qRai = Math.ceil(area * 0.9);
+                const qPM  = Math.ceil(area * 18); const qLN  = Math.ceil(area * 12); const qMas = (area * 0.5).toFixed(1);
+                const qMan = Math.ceil(area * 1.05); const qFit = Math.ceil(area * 1.6); const qTra = Math.ceil(area * 1.0);
+
+                const tPla = qPla * P_PLACA; const tMon = qMon * P_MONTANTE; const tRai = qRai * P_RAIA;
+                const tPM  = qPM * P_PARAFUSO_PM; const tLN  = qLN * P_PARAFUSO_LN; const tMas = qMas * P_MASSA;
+                const tMan = qMan * P_MANTA; const tFit = qFit * P_FITA; const tTra = qTra * P_TRATAMENTO;
+
+                let subtotalPladur = tPla + tMon + tRai + tPM + tLN + tMas + tMan + tFit + tTra;
+
+                document.getElementById('tabela-corpo').innerHTML = `
+                    <tr><td>Placas de Pladur Standard</td><td>` + qPla + ` un</td><td>` + tPla.toFixed(2) + `€</td></tr>
+                    <tr><td>Perfis Montante Metálico 45mm</td><td>` + qMon + ` m</td><td>` + tMon.toFixed(2) + `€</td></tr>
+                    <tr><td>Perfis Raias de Fixação</td><td>` + qRai + ` m</td><td>` + tRai.toFixed(2) + `€</td></tr>
+                    <tr><td>Parafusos PM (Placa-Metal)</td><td>` + qPM + ` un</td><td>` + tPM.toFixed(2) + `€</td></tr>
+                    <tr><td>Parafusos LN (Metal-Metal)</td><td>` + qLN + ` un</td><td>` + tLN.toFixed(2) + `€</td></tr>
+                    <tr><td>Massa de Juntas Pronta Secagem</td><td>` + qMas + ` kg</td><td>` + tMas.toFixed(2) + `€</td></tr>
+                    <tr><td>Manta Isolamento Lã de Rocha</td><td>` + qMan + ` m²</td><td>` + tMan.toFixed(2) + `€</td></tr>
+                    <tr><td>Fita de Juntas de Papel Kraft</td><td>` + qFit + ` m</td><td>` + tFit.toFixed(2) + `€</td></tr>
+                    <tr><td>Tratamento de Juntas Completo</td><td>` + qTra + ` m²</td><td>` + tTra.toFixed(2) + `€</td></tr>
+                `;
+
+                const totalFormatado = subtotalPladur.toFixed(2) + "€";
+                document.getElementById('total-geral').innerText = totalFormatado;
+                
+                const meuNumero = "351910000000";
+                let msgCompleta = '*MANIFESTO DE ENGENHARIA V3 - RD LOGISTICS*\nÁrea Requisitada: ' + area + 'm²\n\n- Placas: ' + qPla + ' un\n- Montantes: ' + qMon + 'm\n- Raias: ' + qRai + 'm\n- Parafusos PM: ' + qPM + 'un\n- Parafusos LN: ' + qLN + 'un\n- Massa: ' + qMas + 'kg\n- Manta: ' + qMan + 'm²\n- Fita: ' + qFit + 'm\n- Tratamento: ' + qTra + 'm²\n\n*TOTAL ESTIMADO DA ESTRUTURA: ' + totalFormatado + '*';
+                
+                document.getElementById('whatsappBtnCalc').onclick = function() {
+                    window.open('https://wa.me/' + meuNumero + '?text=' + encodeURIComponent(msgCompleta), '_blank');
+                };
+            }
+            calcularOrcamentoCompletoV3();
+        </script>
+    </div>
+    
+<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 50px 40px 20px 40px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
+    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #111; padding-bottom: 40px;">
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">
+                A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos. Operamos com uma infraestrutura inteligente e encriptada para garantir o fornecimento cirúrgico de materiais industriais, pladur e insumos de alta engenharia diretamente no coração da sua obra.
+            </p>
+        </div>
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                Plataforma Logística Industrial RD<br>
+                Rua de Santa Catarina, Pavilhão 400<br>
+                4000-443 Porto, Portugal<br>
+                <span style="color: #fff; font-weight: bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span>
+            </p>
+        </div>
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <a href="https://facebook.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#FF0000'; this.style.color='#FF0000'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#00d2ff'; this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#25D366'; this.style.color='#25D366'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+            <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
+        </div>
+    </div>
+    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
+        <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
+        <span>Licença de Operação Logística Certificada nº 44102/RD</span>
+    </div>
+</footer>
+
+    </body>
+    </html>
