@@ -2,13 +2,12 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Admin Premium | RD Logistics</title>
+    <title>Painel Admin Premium</title>
     <style>
         body { background: #050505; color: #eee; font-family: 'Urbanist', sans-serif; padding: 20px; }
-        .container { max-width: 900px; margin: auto; }
         .card { background: #111; padding: 20px; border: 1px solid #333; margin-bottom: 20px; border-radius: 8px; }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
-        button { background: #FF0000; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; width: 100%; }
+        button { background: #FF0000; color: white; padding: 12px; border: none; cursor: pointer; width: 100%; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         td, th { padding: 12px; border: 1px solid #222; text-align: left; }
     </style>
@@ -18,11 +17,11 @@
         <h1>Painel Admin Premium</h1>
         
         <div class="card">
-            <h3>Edição de Textos da Página</h3>
+            <h3>Edição de Textos do Site</h3>
             <input type="text" id="site-titulo" placeholder="Título (H1)">
-            <textarea id="site-subtitulo" placeholder="Subtítulo (P)"></textarea>
-            <input type="text" id="site-footer" placeholder="Texto do Rodapé">
-            <button onclick="salvarTextos()">Atualizar Textos do Site</button>
+            <textarea id="site-subtitulo" placeholder="Texto da Vitrine"></textarea>
+            <input type="text" id="site-footer" placeholder="Rodapé">
+            <button onclick="salvarTextos()">Atualizar Textos</button>
         </div>
 
         <div class="card">
@@ -30,15 +29,14 @@
             <input type="hidden" id="p-index">
             <input type="text" id="p-nome" placeholder="Nome do Produto">
             <input type="number" id="p-preco" placeholder="Preço">
-            <textarea id="p-desc" placeholder="Especificações Técnicas"></textarea>
+            <textarea id="p-desc" placeholder="Descrição Técnica"></textarea>
             <input type="file" id="upload-foto" onchange="converterImagem()">
             <input type="hidden" id="p-foto-base64">
-            <button onclick="salvarProduto()">Guardar Produto</button>
+            <button onclick="salvarProduto()">Guardar/Atualizar Produto</button>
         </div>
 
         <div class="card">
-            <h3>Lista de Produtos</h3>
-            <table id="tabela-produtos">
+            <table>
                 <thead><tr><th>Foto</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
                 <tbody id="corpo-tabela"></tbody>
             </table>
@@ -46,7 +44,15 @@
     </div>
 
     <script>
-        window.onload = () => { if(prompt("Senha:") !== "123") window.location.href="index.html"; renderAdmin(); };
+        // Auditoria: Garantir que a tabela carrega ao abrir
+        window.onload = () => { 
+            if(prompt("Senha:") !== "123") window.location.href="index.html"; 
+            renderAdmin(); 
+            // Carregar campos de texto atuais
+            document.getElementById('site-titulo').value = localStorage.getItem("rd_titulo") || "";
+            document.getElementById('site-subtitulo').value = localStorage.getItem("rd_sub") || "";
+            document.getElementById('site-footer').value = localStorage.getItem("rd_footer") || "";
+        };
 
         function converterImagem() {
             const reader = new FileReader();
@@ -72,6 +78,7 @@
             };
             if(idx === "") prods.push(novo); else prods[idx] = novo;
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            document.getElementById('p-index').value = ""; // Limpar índice
             renderAdmin();
         }
 
@@ -88,9 +95,16 @@
             document.getElementById('p-nome').value = p.nome;
             document.getElementById('p-preco').value = p.preco;
             document.getElementById('p-desc').value = p.desc;
+            document.getElementById('p-foto-base64').value = p.foto;
+            alert("Produto carregado para edição!");
         }
 
-        function remover(i) { let p = JSON.parse(localStorage.getItem("rd_mercadorias")); p.splice(i, 1); localStorage.setItem("rd_mercadorias", JSON.stringify(p)); renderAdmin(); }
+        function remover(i) { 
+            let p = JSON.parse(localStorage.getItem("rd_mercadorias")); 
+            p.splice(i, 1); 
+            localStorage.setItem("rd_mercadorias", JSON.stringify(p)); 
+            renderAdmin(); 
+        }
     </script>
 </body>
 </html>
