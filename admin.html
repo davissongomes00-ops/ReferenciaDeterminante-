@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-pt">
 <head>
@@ -47,16 +46,25 @@
     </div>
 
     <script>
-        // Senha de Acesso
+        // Auditoria: Adicionado tratamento de erro na inicialização
         window.onload = function() {
-            const senha = "123"; 
-            const entrada = prompt("Insira a senha de admin:");
-            if (entrada !== senha) { alert("Acesso negado!"); window.location.href = "index.html"; }
-            renderAdmin();
+            try {
+                const senha = "123"; 
+                const entrada = prompt("Insira a senha de admin:");
+                if (entrada !== senha) { 
+                    alert("Acesso negado!"); 
+                    window.location.href = "index.html"; 
+                    return;
+                }
+                renderAdmin();
+            } catch(e) {
+                console.error("Erro ao carregar o painel:", e);
+            }
         };
 
         function converterImagem() {
             const file = document.getElementById('upload-foto').files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onloadend = function() { document.getElementById('p-foto-base64').value = reader.result; }
             reader.readAsDataURL(file);
@@ -71,15 +79,26 @@
         function salvarProduto() {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
             let idx = document.getElementById('p-index').value;
+            
             let novo = { 
                 nome: document.getElementById('p-nome').value, 
-                preco: parseFloat(document.getElementById('p-preco').value),
+                preco: parseFloat(document.getElementById('p-preco').value) || 0,
                 descricao: document.getElementById('p-desc').value,
                 foto: document.getElementById('p-foto-base64').value || ""
             };
+
             if(idx === "") { prods.push(novo); } else { prods[idx] = novo; }
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            
+            // Auditoria: Limpeza de campos após salvar
+            document.getElementById('p-index').value = "";
+            document.getElementById('p-nome').value = "";
+            document.getElementById('p-preco').value = "";
+            document.getElementById('p-desc').value = "";
+            document.getElementById('p-foto-base64').value = "";
+            
             renderAdmin();
+            alert("Produto guardado com sucesso!");
         }
 
         function renderAdmin() {
@@ -103,13 +122,16 @@
             document.getElementById('p-preco').value = prods[i].preco;
             document.getElementById('p-desc').value = prods[i].descricao;
             document.getElementById('p-foto-base64').value = prods[i].foto;
+            window.scrollTo(0, 0); // Auditoria: Leva o utilizador para o topo ao editar
         }
 
         function remover(i) {
-            let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
-            prods.splice(i, 1);
-            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
-            renderAdmin();
+            if(confirm("Confirmar exclusão?")) {
+                let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
+                prods.splice(i, 1);
+                localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+                renderAdmin();
+            }
         }
     </script>
 </body>
