@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard RD Logistics | Admin</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: 'Urbanist', sans-serif; padding: 40px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: #111; padding: 25px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: white; border-radius: 4px; }
+        button { background: #FF0000; color: white; border: none; padding: 12px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        td, th { padding: 10px; border-bottom: 1px solid #222; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel de Controlo Admin</h1>
+        
+        <div class="card">
+            <h3>Configurar Rodapé</h3>
+            <textarea id="admin-footer" placeholder="Texto do rodapé"></textarea>
+            <button onclick="salvarConfig()">Atualizar Rodapé</button>
+        </div>
+
+        <div class="card">
+            <h3>Adicionar Mercadoria</h3>
+            <input type="text" id="p-nome" placeholder="Nome do Produto">
+            <input type="number" id="p-preco" placeholder="Preço">
+            <button onclick="addProduto()">Guardar Produto</button>
+        </div>
+
+        <div class="card">
+            <h3>Produtos Ativos</h3>
+            <table id="tabela-produtos"></table>
+        </div>
+    </div>
+
+    <script>
+        function renderAdmin() {
+            const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            let html = "<tr><th>Nome</th><th>Preço</th><th>Ação</th></tr>";
+            prods.forEach((p, index) => {
+                html += `<tr><td>${p.nome}</td><td>${p.preco}€</td>
+                         <td><button onclick="remover(${index})">Remover</button></td></tr>`;
+            });
+            document.getElementById("tabela-produtos").innerHTML = html;
+        }
+
+        function addProduto() {
+            let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            prods.push({ 
+                nome: document.getElementById('p-nome').value, 
+                preco: parseFloat(document.getElementById('p-preco').value) 
+            });
+            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            renderAdmin();
+        }
+
+        function remover(index) {
+            let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
+            prods.splice(index, 1);
+            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            renderAdmin();
+        }
+
+        function salvarConfig() {
+            localStorage.setItem("rd_footer_text", document.getElementById('admin-footer').value);
+            alert("Configurações salvas!");
+        }
+        renderAdmin();
+    </script>
+</body>
+</html>
