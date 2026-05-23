@@ -354,6 +354,22 @@
             if (valor) document.getElementById(id).innerText = valor;
         }
     });
+</script><script>
+    window.addEventListener('load', () => {
+        const maps = {
+            "hero-titulo": "rd_titulo",
+            "hero-sub": "rd_sub",
+            "footer-text": "rd_footer"
+        };
+        
+        for (const [id, key] of Object.entries(maps)) {
+            const valor = localStorage.getItem(key);
+            if (valor) {
+                const el = document.getElementById(id);
+                if(el) el.innerText = valor;
+            }
+        }
+    });
 </script>
 
     </body>
