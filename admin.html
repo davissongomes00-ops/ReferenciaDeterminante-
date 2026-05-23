@@ -2,73 +2,119 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard RD Logistics | Admin</title>
+    <title>Painel Admin | RD Logistics</title>
     <style>
-        body { background: #0a0a0a; color: #fff; font-family: 'Urbanist', sans-serif; padding: 40px; }
-        .container { max-width: 800px; margin: auto; }
-        .card { background: #111; padding: 25px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: white; border-radius: 4px; }
-        button { background: #FF0000; color: white; border: none; padding: 12px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        td, th { padding: 10px; border-bottom: 1px solid #222; text-align: left; }
+        body { background: #050505; color: #eee; font-family: 'Urbanist', sans-serif; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        .card { background: #111; padding: 20px; border: 1px solid #333; margin-bottom: 20px; border-radius: 8px; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #000; border: 1px solid #444; color: white; }
+        button { background: #FF0000; color: white; padding: 10px 15px; border: none; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td, th { padding: 12px; border-bottom: 1px solid #222; text-align: left; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Painel de Controlo Admin</h1>
-        
+        <h1>Painel de Administração</h1>
+
         <div class="card">
-            <h3>Configurar Rodapé</h3>
+            <h3>Editar Rodapé</h3>
             <textarea id="admin-footer" placeholder="Texto do rodapé"></textarea>
-            <button onclick="salvarConfig()">Atualizar Rodapé</button>
+            <button onclick="salvarRodape()">Salvar Rodapé</button>
         </div>
 
         <div class="card">
-            <h3>Adicionar Mercadoria</h3>
+            <h3>Nova Mercadoria / Editar</h3>
+            <input type="hidden" id="p-index">
             <input type="text" id="p-nome" placeholder="Nome do Produto">
             <input type="number" id="p-preco" placeholder="Preço">
-            <button onclick="addProduto()">Guardar Produto</button>
+            <input type="file" id="upload-foto" accept="image/*" onchange="converterImagem()">
+            <input type="hidden" id="p-foto-base64">
+            <button onclick="salvarProduto()">Guardar Produto</button>
         </div>
 
         <div class="card">
-            <h3>Produtos Ativos</h3>
-            <table id="tabela-produtos"></table>
+            <h3>Lista de Produtos</h3>
+            <table id="tabela-produtos">
+                <thead><tr><th>Foto</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
+                <tbody id="corpo-tabela"></tbody>
+            </table>
         </div>
     </div>
 
     <script>
+        // 1. Proteção por senha simples
+        window.onload = function() {
+            const senha = "123"; // Podes alterar a senha aqui
+            const entrada = prompt("Insira a senha de admin:");
+            if (entrada !== senha) {
+                alert("Acesso negado!");
+                window.location.href = "index.html";
+            }
+            renderAdmin();
+        };
+
+        // 2. Upload de imagem (Converter para Base64)
+        function converterImagem() {
+            const file = document.getElementById('upload-foto').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                document.getElementById('p-foto-base64').value = reader.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // 3. Funções de Gestão
         function renderAdmin() {
             const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            let html = "<tr><th>Nome</th><th>Preço</th><th>Ação</th></tr>";
-            prods.forEach((p, index) => {
-                html += `<tr><td>${p.nome}</td><td>${p.preco}€</td>
-                         <td><button onclick="remover(${index})">Remover</button></td></tr>`;
+            const tbody = document.getElementById("corpo-tabela");
+            tbody.innerHTML = "";
+            prods.forEach((p, i) => {
+                tbody.innerHTML += `<tr>
+                    <td><img src="${p.foto}" style="width:50px;height:50px;object-fit:cover;"></td>
+                    <td>${p.nome}</td><td>${p.preco}€</td>
+                    <td><button onclick="editar(${i})">Editar</button> 
+                        <button onclick="remover(${i})" style="background:#550000">X</button></td>
+                </tr>`;
             });
-            document.getElementById("tabela-produtos").innerHTML = html;
         }
 
-        function addProduto() {
+        function salvarProduto() {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            prods.push({ 
+            let idx = document.getElementById('p-index').value;
+            let novo = { 
                 nome: document.getElementById('p-nome').value, 
-                preco: parseFloat(document.getElementById('p-preco').value) 
-            });
+                preco: parseFloat(document.getElementById('p-preco').value),
+                foto: document.getElementById('p-foto-base64').value || ""
+            };
+
+            if(idx === "") { prods.push(novo); } 
+            else { prods[idx] = novo; }
+
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            document.getElementById('p-index').value = "";
             renderAdmin();
         }
 
-        function remover(index) {
+        function editar(i) {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
-            prods.splice(index, 1);
+            document.getElementById('p-index').value = i;
+            document.getElementById('p-nome').value = prods[i].nome;
+            document.getElementById('p-preco').value = prods[i].preco;
+            document.getElementById('p-foto-base64').value = prods[i].foto;
+        }
+
+        function remover(i) {
+            let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
+            prods.splice(i, 1);
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
             renderAdmin();
         }
 
-        function salvarConfig() {
+        function salvarRodape() {
             localStorage.setItem("rd_footer_text", document.getElementById('admin-footer').value);
-            alert("Configurações salvas!");
+            alert("Rodapé atualizado!");
         }
-        renderAdmin();
     </script>
 </body>
 </html>
