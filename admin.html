@@ -8,7 +8,7 @@
         .container { max-width: 900px; margin: auto; }
         .card { background: #111; padding: 20px; border: 1px solid #333; margin-bottom: 20px; border-radius: 8px; }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
-        button { background: #FF0000; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        button { background: #FF0000; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; width: 100%; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         td, th { padding: 12px; border: 1px solid #222; text-align: left; }
     </style>
@@ -16,12 +16,13 @@
 <body>
     <div class="container">
         <h1>Painel Admin Premium</h1>
-
+        
         <div class="card">
-            <h3>Textos da Página (Home)</h3>
-            <input type="text" id="site-titulo" placeholder="Título Principal (Hero)">
-            <textarea id="site-subtitulo" placeholder="Subtítulo da Hero"></textarea>
-            <button onclick="salvarTextosSite()">Atualizar Textos do Site</button>
+            <h3>Edição de Textos da Página</h3>
+            <input type="text" id="site-titulo" placeholder="Título (H1)">
+            <textarea id="site-subtitulo" placeholder="Subtítulo (P)"></textarea>
+            <input type="text" id="site-footer" placeholder="Texto do Rodapé">
+            <button onclick="salvarTextos()">Atualizar Textos do Site</button>
         </div>
 
         <div class="card">
@@ -30,15 +31,14 @@
             <input type="text" id="p-nome" placeholder="Nome do Produto">
             <input type="number" id="p-preco" placeholder="Preço">
             <textarea id="p-desc" placeholder="Especificações Técnicas"></textarea>
-            <label>Trocar Foto:</label>
-            <input type="file" id="upload-foto" accept="image/*" onchange="converterImagem()">
+            <input type="file" id="upload-foto" onchange="converterImagem()">
             <input type="hidden" id="p-foto-base64">
-            <button onclick="salvarProduto()">Guardar Produto / Alterar</button>
+            <button onclick="salvarProduto()">Guardar Produto</button>
         </div>
 
         <div class="card">
             <h3>Lista de Produtos</h3>
-            <table>
+            <table id="tabela-produtos">
                 <thead><tr><th>Foto</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
                 <tbody id="corpo-tabela"></tbody>
             </table>
@@ -46,93 +46,51 @@
     </div>
 
     <script>
-        // Auditoria: Adicionado tratamento de erro na inicialização
-        window.onload = function() {
-            try {
-                const senha = "123"; 
-                const entrada = prompt("Insira a senha de admin:");
-                if (entrada !== senha) { 
-                    alert("Acesso negado!"); 
-                    window.location.href = "index.html"; 
-                    return;
-                }
-                renderAdmin();
-            } catch(e) {
-                console.error("Erro ao carregar o painel:", e);
-            }
-        };
+        window.onload = () => { if(prompt("Senha:") !== "123") window.location.href="index.html"; renderAdmin(); };
 
         function converterImagem() {
-            const file = document.getElementById('upload-foto').files[0];
-            if (!file) return;
             const reader = new FileReader();
-            reader.onloadend = function() { document.getElementById('p-foto-base64').value = reader.result; }
-            reader.readAsDataURL(file);
+            reader.onloadend = () => document.getElementById('p-foto-base64').value = reader.result;
+            reader.readAsDataURL(document.getElementById('upload-foto').files[0]);
         }
 
-        function salvarTextosSite() {
-            localStorage.setItem("rd_site_titulo", document.getElementById('site-titulo').value);
-            localStorage.setItem("rd_site_subtitulo", document.getElementById('site-subtitulo').value);
-            alert("Textos atualizados!");
+        function salvarTextos() {
+            localStorage.setItem("rd_titulo", document.getElementById('site-titulo').value);
+            localStorage.setItem("rd_sub", document.getElementById('site-subtitulo').value);
+            localStorage.setItem("rd_footer", document.getElementById('site-footer').value);
+            alert("Textos guardados!");
         }
 
         function salvarProduto() {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
             let idx = document.getElementById('p-index').value;
-            
             let novo = { 
                 nome: document.getElementById('p-nome').value, 
-                preco: parseFloat(document.getElementById('p-preco').value) || 0,
-                descricao: document.getElementById('p-desc').value,
-                foto: document.getElementById('p-foto-base64').value || ""
+                preco: document.getElementById('p-preco').value,
+                desc: document.getElementById('p-desc').value,
+                foto: document.getElementById('p-foto-base64').value 
             };
-
-            if(idx === "") { prods.push(novo); } else { prods[idx] = novo; }
+            if(idx === "") prods.push(novo); else prods[idx] = novo;
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
-            
-            // Auditoria: Limpeza de campos após salvar
-            document.getElementById('p-index').value = "";
-            document.getElementById('p-nome').value = "";
-            document.getElementById('p-preco').value = "";
-            document.getElementById('p-desc').value = "";
-            document.getElementById('p-foto-base64').value = "";
-            
             renderAdmin();
-            alert("Produto guardado com sucesso!");
         }
 
         function renderAdmin() {
             const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            const tbody = document.getElementById("corpo-tabela");
-            tbody.innerHTML = "";
-            prods.forEach((p, i) => {
-                tbody.innerHTML += `<tr>
-                    <td><img src="${p.foto}" style="width:50px;height:50px;object-fit:cover;"></td>
-                    <td>${p.nome}</td><td>${p.preco}€</td>
-                    <td><button onclick="editar(${i})">Editar</button> 
-                        <button onclick="remover(${i})" style="background:#550000">X</button></td>
-                </tr>`;
-            });
+            document.getElementById('corpo-tabela').innerHTML = prods.map((p, i) => `
+                <tr><td><img src="${p.foto}" width="50"></td><td>${p.nome}</td><td>${p.preco}€</td>
+                <td><button onclick="editar(${i})">Editar</button> <button onclick="remover(${i})">X</button></td></tr>`).join('');
         }
 
         function editar(i) {
-            let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
+            let p = JSON.parse(localStorage.getItem("rd_mercadorias"))[i];
             document.getElementById('p-index').value = i;
-            document.getElementById('p-nome').value = prods[i].nome;
-            document.getElementById('p-preco').value = prods[i].preco;
-            document.getElementById('p-desc').value = prods[i].descricao;
-            document.getElementById('p-foto-base64').value = prods[i].foto;
-            window.scrollTo(0, 0); // Auditoria: Leva o utilizador para o topo ao editar
+            document.getElementById('p-nome').value = p.nome;
+            document.getElementById('p-preco').value = p.preco;
+            document.getElementById('p-desc').value = p.desc;
         }
 
-        function remover(i) {
-            if(confirm("Confirmar exclusão?")) {
-                let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
-                prods.splice(i, 1);
-                localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
-                renderAdmin();
-            }
-        }
+        function remover(i) { let p = JSON.parse(localStorage.getItem("rd_mercadorias")); p.splice(i, 1); localStorage.setItem("rd_mercadorias", JSON.stringify(p)); renderAdmin(); }
     </script>
 </body>
 </html>
