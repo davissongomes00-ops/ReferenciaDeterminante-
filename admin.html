@@ -1,41 +1,45 @@
+
 <!DOCTYPE html>
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Admin | RD Logistics</title>
+    <title>Painel Admin Premium | RD Logistics</title>
     <style>
         body { background: #050505; color: #eee; font-family: 'Urbanist', sans-serif; padding: 20px; }
         .container { max-width: 900px; margin: auto; }
         .card { background: #111; padding: 20px; border: 1px solid #333; margin-bottom: 20px; border-radius: 8px; }
-        input, textarea { width: 100%; padding: 10px; margin: 5px 0; background: #000; border: 1px solid #444; color: white; }
-        button { background: #FF0000; color: white; padding: 10px 15px; border: none; cursor: pointer; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        td, th { padding: 12px; border-bottom: 1px solid #222; text-align: left; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        button { background: #FF0000; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        td, th { padding: 12px; border: 1px solid #222; text-align: left; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Painel de Administração</h1>
+        <h1>Painel Admin Premium</h1>
 
         <div class="card">
-            <h3>Editar Rodapé</h3>
-            <textarea id="admin-footer" placeholder="Texto do rodapé"></textarea>
-            <button onclick="salvarRodape()">Salvar Rodapé</button>
+            <h3>Textos da Página (Home)</h3>
+            <input type="text" id="site-titulo" placeholder="Título Principal (Hero)">
+            <textarea id="site-subtitulo" placeholder="Subtítulo da Hero"></textarea>
+            <button onclick="salvarTextosSite()">Atualizar Textos do Site</button>
         </div>
 
         <div class="card">
-            <h3>Nova Mercadoria / Editar</h3>
+            <h3>Gestão de Mercadoria</h3>
             <input type="hidden" id="p-index">
             <input type="text" id="p-nome" placeholder="Nome do Produto">
             <input type="number" id="p-preco" placeholder="Preço">
+            <textarea id="p-desc" placeholder="Especificações Técnicas"></textarea>
+            <label>Trocar Foto:</label>
             <input type="file" id="upload-foto" accept="image/*" onchange="converterImagem()">
             <input type="hidden" id="p-foto-base64">
-            <button onclick="salvarProduto()">Guardar Produto</button>
+            <button onclick="salvarProduto()">Guardar Produto / Alterar</button>
         </div>
 
         <div class="card">
             <h3>Lista de Produtos</h3>
-            <table id="tabela-produtos">
+            <table>
                 <thead><tr><th>Foto</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
                 <tbody id="corpo-tabela"></tbody>
             </table>
@@ -43,28 +47,41 @@
     </div>
 
     <script>
-        // 1. Proteção por senha simples
+        // Senha de Acesso
         window.onload = function() {
-            const senha = "123"; // Podes alterar a senha aqui
+            const senha = "123"; 
             const entrada = prompt("Insira a senha de admin:");
-            if (entrada !== senha) {
-                alert("Acesso negado!");
-                window.location.href = "index.html";
-            }
+            if (entrada !== senha) { alert("Acesso negado!"); window.location.href = "index.html"; }
             renderAdmin();
         };
 
-        // 2. Upload de imagem (Converter para Base64)
         function converterImagem() {
             const file = document.getElementById('upload-foto').files[0];
             const reader = new FileReader();
-            reader.onloadend = function() {
-                document.getElementById('p-foto-base64').value = reader.result;
-            }
+            reader.onloadend = function() { document.getElementById('p-foto-base64').value = reader.result; }
             reader.readAsDataURL(file);
         }
 
-        // 3. Funções de Gestão
+        function salvarTextosSite() {
+            localStorage.setItem("rd_site_titulo", document.getElementById('site-titulo').value);
+            localStorage.setItem("rd_site_subtitulo", document.getElementById('site-subtitulo').value);
+            alert("Textos atualizados!");
+        }
+
+        function salvarProduto() {
+            let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            let idx = document.getElementById('p-index').value;
+            let novo = { 
+                nome: document.getElementById('p-nome').value, 
+                preco: parseFloat(document.getElementById('p-preco').value),
+                descricao: document.getElementById('p-desc').value,
+                foto: document.getElementById('p-foto-base64').value || ""
+            };
+            if(idx === "") { prods.push(novo); } else { prods[idx] = novo; }
+            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            renderAdmin();
+        }
+
         function renderAdmin() {
             const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
             const tbody = document.getElementById("corpo-tabela");
@@ -79,28 +96,12 @@
             });
         }
 
-        function salvarProduto() {
-            let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            let idx = document.getElementById('p-index').value;
-            let novo = { 
-                nome: document.getElementById('p-nome').value, 
-                preco: parseFloat(document.getElementById('p-preco').value),
-                foto: document.getElementById('p-foto-base64').value || ""
-            };
-
-            if(idx === "") { prods.push(novo); } 
-            else { prods[idx] = novo; }
-
-            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
-            document.getElementById('p-index').value = "";
-            renderAdmin();
-        }
-
         function editar(i) {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
             document.getElementById('p-index').value = i;
             document.getElementById('p-nome').value = prods[i].nome;
             document.getElementById('p-preco').value = prods[i].preco;
+            document.getElementById('p-desc').value = prods[i].descricao;
             document.getElementById('p-foto-base64').value = prods[i].foto;
         }
 
@@ -109,11 +110,6 @@
             prods.splice(i, 1);
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
             renderAdmin();
-        }
-
-        function salvarRodape() {
-            localStorage.setItem("rd_footer_text", document.getElementById('admin-footer').value);
-            alert("Rodapé atualizado!");
         }
     </script>
 </body>
