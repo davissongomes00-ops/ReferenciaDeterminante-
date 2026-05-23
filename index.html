@@ -340,7 +340,21 @@
         <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
         <span>Licença de Operação Logística Certificada nº 44102/RD</span>
     </div>
-</footer>
+</footer><script>
+    window.addEventListener('load', () => {
+        // IDs que deves colocar no teu HTML: <h1 id="hero-titulo">...</h1>
+        const maps = {
+            "hero-titulo": "rd_titulo",
+            "hero-sub": "rd_sub",
+            "footer-text": "rd_footer"
+        };
+        
+        for (const [id, key] of Object.entries(maps)) {
+            const valor = localStorage.getItem(key);
+            if (valor) document.getElementById(id).innerText = valor;
+        }
+    });
+</script>
 
     </body>
     </html>
