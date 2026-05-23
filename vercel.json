@@ -1,8 +1,8 @@
-
 {
   "cleanUrls": true,
   "rewrites": [
     { "source": "/calc", "destination": "/calc.html" },
-    { "source": "/pagamento", "destination": "/pagamento.html" }
+    { "source": "/pagamento", "destination": "/pagamento.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
