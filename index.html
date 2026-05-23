@@ -370,6 +370,33 @@
             }
         }
     });
+</script><script>
+    // ESTA FUNÇÃO FAZ A PONTE ENTRE O PAINEL E O SITE
+    window.addEventListener('load', () => {
+        // 1. Títulos e Textos
+        const rd_titulo = localStorage.getItem("rd_titulo");
+        const rd_sub = localStorage.getItem("rd_sub");
+        const rd_footer = localStorage.getItem("rd_footer");
+
+        // Substituir no HTML (certifique-se que estes IDs existem no seu HTML)
+        if (rd_titulo) document.getElementById('hero-titulo').innerText = rd_titulo;
+        if (rd_sub) document.getElementById('hero-sub').innerText = rd_sub;
+        if (rd_footer) document.getElementById('footer-text').innerText = rd_footer;
+
+        // 2. Carregar produtos na vitrine (se tiver uma secção de vitrine)
+        const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+        const vitrine = document.getElementById('vitrine-produtos');
+        if (vitrine && prods.length > 0) {
+            vitrine.innerHTML = prods.map(p => `
+                <div class="produto-card">
+                    <img src="${p.foto}" width="100">
+                    <h3>${p.nome}</h3>
+                    <p>${p.desc}</p>
+                    <span>${p.preco}€</span>
+                </div>
+            `).join('');
+        }
+    });
 </script>
 
     </body>
