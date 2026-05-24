@@ -33,7 +33,9 @@
     </table>
 
     <script>
-        // 1. Converter imagem para Base64 (para guardar como texto no localStorage)
+        /**
+         * Converte a imagem carregada para Base64 e armazena no campo oculto.
+         */
         function converterParaBase64() {
             const file = document.getElementById('upload-foto').files[0];
             const reader = new FileReader();
@@ -43,7 +45,11 @@
             reader.readAsDataURL(file);
         }
 
-        // 2. Guardar ou Editar
+        /**
+         * Guarda ou edita um produto no localStorage.
+         * 
+         * @raises ValueError se o preço não for um número ou se a lista de produtos estiver vazia.
+         */
         function salvarProduto() {
             let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
             let idx = document.getElementById('p-index').value;
@@ -55,32 +61,55 @@
                 foto: document.getElementById('p-foto').value
             };
 
-            if (idx === "") { prods.push(p); } 
-            else { prods[idx] = p; }
-            
+            if (isNaN(p.preco) || p.nome === "") {
+                throw new ValueError('Nome do produto ou preço inválido.');
+            }
+
+            if (idx === "") {
+                prods.push(p);
+            } else {
+                prods[idx] = p;
+            }
             localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
             location.reload();
         }
 
-        // 3. Renderizar Lista
-        const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-        const tbody = document.getElementById("corpo-tabela");
-        prods.forEach((p, i) => {
-            tbody.innerHTML += `<tr>
-                <td><img src="${p.foto}" width="50" height="50" style="object-fit:cover;"></td>
-                <td>${p.nome}</td><td>${p.preco}€</td>
-                <td><button onclick="editar(${i})">Editar</button></td>
-            </tr>`;
-        });
+        /**
+         * Renderiza a lista de produtos armazenados no localStorage.
+         */
+        function renderizarLista() {
+            const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            const tbody = document.getElementById("corpo-tabela");
+            tbody.innerHTML = ''; // Limpa a tabela antes de renderizar
+            if (prods.length === 0) {
+                throw new ValueError('A lista de produtos está vazia.');
+            }
+            prods.forEach((p, i) => {
+                tbody.innerHTML += `<tr>
+                    <td><img src="${p.foto}" width="50" height="50" style="object-fit:cover;"></td>
+                    <td>${p.nome}</td><td>${p.preco}€</td>
+                    <td><button onclick="editar(${i})">Editar</button></td>
+                </tr>`;
+            });
+        }
 
+        /**
+         * Edita um produto baseado no índice.
+         * 
+         * @param {number} i - Índice do produto a ser editado.
+         */
         function editar(i) {
-            let p = JSON.parse(localStorage.getItem("rd_mercadorias"))[i];
+            const prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
+            let p = prods[i];
             document.getElementById('p-index').value = i;
             document.getElementById('p-nome').value = p.nome;
             document.getElementById('p-preco').value = p.preco;
             document.getElementById('p-desc').value = p.descricao;
             document.getElementById('p-foto').value = p.foto;
         }
+        // Chamada inicial para renderizar a lista
+        renderizarLista();
     </script>
 </body>
 </html>
+
