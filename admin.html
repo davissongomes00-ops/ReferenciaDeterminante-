@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Admin - Mercadorias</title>
+    <title>Admin Panel - Merchandise</title>
     <style>
         body { background: #050505; color: white; font-family: 'Urbanist', sans-serif; padding: 20px; }
         .card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
@@ -14,101 +14,102 @@
 </head>
 <body>
     <div class="card">
-        <h3>Adicionar/Editar Mercadoria</h3>
-        <input type="hidden" id="p-index">
-        <input type="text" id="p-nome" placeholder="Nome do Produto">
-        <input type="number" id="p-preco" placeholder="Preço">
-        <textarea id="p-desc" placeholder="Descrição Técnica"></textarea>
+        <h3>Add/Edit Merchandise</h3>
+        <input type="hidden" id="product-index">
+        <input type="text" id="product-name" placeholder="Product Name">
+        <input type="number" id="product-price" placeholder="Price">
+        <textarea id="product-desc" placeholder="Technical Description"></textarea>
         
-        <label>Foto do Produto:</label>
-        <input type="file" id="upload-foto" accept="image/*" onchange="converterParaBase64()">
-        <input type="hidden" id="p-foto">
+        <label>Product Image:</label>
+        <input type="file" id="upload-photo" accept="image/*" onchange="convertToBase64()">
+        <input type="hidden" id="product-photo">
         
-        <button onclick="salvarProduto()">Guardar Produto</button>
+        <button onclick="saveProduct()">Save Product</button>
     </div>
 
     <table>
-        <thead><tr><th>Foto</th><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead>
-        <tbody id="corpo-tabela"></tbody>
+        <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
+        <tbody id="table-body"></tbody>
     </table>
 
     <script>
         /**
-         * Converte a imagem carregada para Base64 e armazena no campo oculto.
+         * Converts the uploaded image to Base64 and stores it in the hidden input.
          */
-        function converterParaBase64() {
-            const file = document.getElementById('upload-foto').files[0];
+        function convertToBase64() {
+            const file = document.getElementById('upload-photo').files[0];
             const reader = new FileReader();
             reader.onloadend = function() {
-                document.getElementById('p-foto').value = reader.result;
+                document.getElementById('product-photo').value = reader.result;
             }
             reader.readAsDataURL(file);
         }
 
         /**
-         * Guarda ou edita um produto no localStorage.
-         * 
-         * @raises ValueError se o preço não for um número ou se a lista de produtos estiver vazia.
+         * Saves or updates a product in localStorage.
          */
-        function salvarProduto() {
-            let prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            let idx = document.getElementById('p-index').value;
-            let p = {
+        function saveProduct() {
+            let products = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            let index = document.getElementById('product-index').value;
+            let product = {
                 id: "p" + Date.now(),
-                nome: document.getElementById('p-nome').value,
-                preco: parseFloat(document.getElementById('p-preco').value),
-                descricao: document.getElementById('p-desc').value,
-                foto: document.getElementById('p-foto').value
+                nome: document.getElementById('product-name').value,
+                preco: parseFloat(document.getElementById('product-price').value),
+                descricao: document.getElementById('product-desc').value,
+                foto: document.getElementById('product-photo').value
             };
 
-            if (isNaN(p.preco) || p.nome === "") {
-                throw new ValueError('Nome do produto ou preço inválido.');
+            if (isNaN(product.preco) || product.nome === "") {
+                alert('Invalid product name or price.');
+                return;
             }
 
-            if (idx === "") {
-                prods.push(p);
+            if (index === "") {
+                products.push(product);
             } else {
-                prods[idx] = p;
+                products[index] = product;
             }
-            localStorage.setItem("rd_mercadorias", JSON.stringify(prods));
+            localStorage.setItem("rd_mercadorias", JSON.stringify(products));
             location.reload();
         }
 
         /**
-         * Renderiza a lista de produtos armazenados no localStorage.
+         * Renders the list of products stored in localStorage.
          */
-        function renderizarLista() {
-            const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            const tbody = document.getElementById("corpo-tabela");
-            tbody.innerHTML = ''; // Limpa a tabela antes de renderizar
-            if (prods.length === 0) {
-                throw new ValueError('A lista de produtos está vazia.');
+        function renderProductList() {
+            const products = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = ''; 
+
+            if (products.length === 0) {
+                console.warn('The product list is empty.');
             }
-            prods.forEach((p, i) => {
+
+            products.forEach((p, i) => {
                 tbody.innerHTML += `<tr>
                     <td><img src="${p.foto}" width="50" height="50" style="object-fit:cover;"></td>
                     <td>${p.nome}</td><td>${p.preco}€</td>
-                    <td><button onclick="editar(${i})">Editar</button></td>
+                    <td><button onclick="editProduct(${i})">Edit</button></td>
                 </tr>`;
             });
         }
 
         /**
-         * Edita um produto baseado no índice.
-         * 
-         * @param {number} i - Índice do produto a ser editado.
+         * Populates the form fields based on the product index.
+         * * @param {number} index - Index of the product to be edited.
          */
-        function editar(i) {
-            const prods = JSON.parse(localStorage.getItem("rd_mercadorias"));
-            let p = prods[i];
-            document.getElementById('p-index').value = i;
-            document.getElementById('p-nome').value = p.nome;
-            document.getElementById('p-preco').value = p.preco;
-            document.getElementById('p-desc').value = p.descricao;
-            document.getElementById('p-foto').value = p.foto;
+        function editProduct(index) {
+            const products = JSON.parse(localStorage.getItem("rd_mercadorias"));
+            let p = products[index];
+            document.getElementById('product-index').value = index;
+            document.getElementById('product-name').value = p.nome;
+            document.getElementById('product-price').value = p.preco;
+            document.getElementById('product-desc').value = p.descricao;
+            document.getElementById('product-photo').value = p.foto;
         }
-        // Chamada inicial para renderizar a lista
-        renderizarLista();
+
+        // Initial render call
+        renderProductList();
     </script>
 </body>
 </html>
