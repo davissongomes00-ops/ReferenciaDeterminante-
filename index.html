@@ -1,1602 +1,315 @@
 <!DOCTYPE html>
-
-
-
-    <html lang="pt-pt" class="notranslate" translate="no">
-
-
-
-    <head>
-
-
-
-        <meta charset="UTF-8">
-
-
-
-        <meta name="google" content="notranslate">
-
-
-
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
-        <title>RD Logistics | E-Commerce</title>
-
-
-
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-
-
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-
-
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfHRXouF8MuF9a59X9CcmRzXx_tovAdhY&callback=inicializarMapaReal&v=weekly" defer></script>
-
-
-
-        <style>
-
-
-
-            :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --card-bg: #0a0a0a; }
-
-
-
-            * { box-sizing: border-box; transition: all 0.2s ease; }
-
-
-
-            body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; overflow-x: hidden; }
-
-
-
-            .hero { text-align: center; padding: 40px 20px; background: radial-gradient(circle, #150000 0%, #000000 100%); border-bottom: 1px solid #111; }
-
-
-
-            .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; margin: 0; color: white; }
-
-
-
-            .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 30px; padding: 40px; max-width: 1400px; margin: auto; }
-
-
-
-            .section-title { font-family: 'Orbitron'; border-left: 4px solid var(--rd-red); padding-left: 15px; margin-bottom: 25px; font-size: 1.4rem; }
-
-
-
-            .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-
-
-
-            .product-card { background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; position: relative; cursor: pointer; }
-
-
-
-            .product-card:hover { border-color: var(--rd-red); transform: translateY(-3px); }
-
-
-
-            .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; background: #111; margin-bottom: 15px; border: 1px solid #222; }
-
-
-
-            .product-card h3 { font-family: 'Orbitron'; color: white; margin: 10px 0; font-size: 1.25rem; }
-
-
-
-            .product-card .price { color: var(--nexus-blue); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
-
-
-
-            
-
-
-
-            .qty-control { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: auto; }
-
-
-
-            .qty-input { width: 70px; padding: 10px; background: #111; border: 1px solid #333; color: white; text-align: center; border-radius: 4px; font-family: 'Orbitron'; font-size: 1rem; }
-
-
-
-            .btn-buy { background: #111; color: white; border: 1px solid #444; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; width: 100%; text-transform: uppercase; }
-
-
-
-            .btn-buy.selected { background: var(--rd-red); border-color: var(--rd-red); color: white; }
-
-
-
-            
-
-
-
-            .sidebar { display: flex; flex-direction: column; gap: 30px; }
-
-
-
-            .panel-box { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 25px; }
-
-
-
-            .panel-box h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
-
-
-
-            #mapa-real-google { width: 100%; height: 240px; border-radius: 8px; border: 1px solid #ccc; margin-top: 15px; background: #fff; }
-
-
-
-            .btn-go-calc { width: 100%; background: var(--nexus-blue); color: black; border: none; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; text-align: center; text-decoration: none; display: block; margin-top: 15px; }
-
-
-
-            .btn-track { width: 100%; background: #FF0000; color: white; border: none; padding: 12px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
-
-
-
-            .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1c1c1c; }
-
-
-
-            .total-preview { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--rd-red); font-weight: bold; text-align: right; margin-top: 15px; }
-
-
-
-
-
-
-
-            .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-
-
-
-            .modal-container { background: #0a0a0a; border: 2px solid #222; border-top: 4px solid var(--rd-red); width: 100%; max-width: 850px; border-radius: 12px; padding: 30px; position: relative; box-shadow: 0 0 30px rgba(255,0,0,0.15); animation: zoomIn 0.25s ease-out; }
-
-
-
-            @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-
-
-            .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #555; font-size: 1.8rem; cursor: pointer; }
-
-
-
-            .modal-close:hover { color: var(--rd-red); }
-
-
-
-            .modal-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; margin-top: 15px; }
-
-
-
-            .modal-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
-
-
-
-            .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.8rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
-
-
-
-            .modal-price { font-family: 'Orbitron'; font-size: 2rem; color: var(--nexus-blue); font-weight: bold; margin: 15px 0; }
-
-
-
-            .modal-desc-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #555; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
-
-
-
-            .modal-desc-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-top: 5px; text-align: justify; }
-
-
-
-            .modal-actions { margin-top: 25px; display: flex; gap: 15px; }
-
-
-
-        </style>
-
-
-
-    </head>
-
-
-
-    <body>
-
-
-
-    
-
-
-
-<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
-
-
-
-    <div style="display: flex; align-items: center; gap: 20px;">
-
-
-
-        <div style="display: flex; flex-direction: column; gap: 4px;">
-
-
-
-            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
-
-
-
-            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
-
-
-
-                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
-
-
-
-                System Online | Secure Encrypted
-
-
-
-            </span>
-
-
-
-        </div>
-
-
-
-        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 4px; border: 1px solid #222; overflow: hidden;">
-
-
-
-            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #300000 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
-
-
-
-            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #00d2ff 0%, #002d3a 100%); filter: drop-shadow(0 0 4px #00d2ff); animation: orbitH2 4s infinite linear;"></div>
-
-
-
-            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #fff 0%, #444 100%); filter: drop-shadow(0 0 3px #fff); animation: orbitH3 2.5s infinite linear;"></div>
-
-
-
-        </div>
-
-
-
-    </div>
-
-
-
+<html lang="pt-pt" class="notranslate" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | E-Commerce</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfHRXouF8MuF9a59X9CcmRzXx_tovAdhY&callback=inicializarMapaReal&v=weekly" defer></script>
     <style>
-
-
-
-        @keyframes orbitH1 { 0% { transform: rotate(0deg) translateX(15px); } 100% { transform: rotate(360deg) translateX(15px); } }
-
-
-
-        @keyframes orbitH2 { 0% { transform: rotate(360deg) translateX(22px); } 100% { transform: rotate(0deg) translateX(22px); } }
-
-
-
-        @keyframes orbitH3 { 0% { transform: rotate(120deg) translateX(10px); } 100% { transform: rotate(480deg) translateX(10px); } }
-
-
-
-        @keyframes pulseGlow { 0% { opacity: 0.4; filter: drop-shadow(0 0 1px #25D366); } 100% { opacity: 1; filter: drop-shadow(0 0 5px #25D366); } }
-
-
-
-        nav { display: flex; gap: 25px; align-items: center; }
-
-
-
-        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
-
-
-
-        nav a:hover, nav a.active { color: #FF0000; }
-
-
-
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --card-bg: #0a0a0a; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; overflow-x: hidden; }
+        .hero { text-align: center; padding: 40px 20px; background: radial-gradient(circle, #150000 0%, #000000 100%); border-bottom: 1px solid #111; }
+        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; margin: 0; color: white; }
+        .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 30px; padding: 40px; max-width: 1400px; margin: auto; }
+        .section-title { font-family: 'Orbitron'; border-left: 4px solid var(--rd-red); padding-left: 15px; margin-bottom: 25px; font-size: 1.4rem; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .product-card { background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; position: relative; cursor: pointer; }
+        .product-card:hover { border-color: var(--rd-red); transform: translateY(-3px); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; background: #111; margin-bottom: 15px; border: 1px solid #222; }
+        .product-card h3 { font-family: 'Orbitron'; color: white; margin: 10px 0; font-size: 1.25rem; }
+        .product-card .price { color: var(--nexus-blue); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
+        .qty-control { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: auto; }
+        .qty-input { width: 70px; padding: 10px; background: #111; border: 1px solid #333; color: white; text-align: center; border-radius: 4px; font-family: 'Orbitron'; font-size: 1rem; }
+        .btn-buy { background: #111; color: white; border: 1px solid #444; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; width: 100%; text-transform: uppercase; }
+        .btn-buy.selected { background: var(--rd-red); border-color: var(--rd-red); color: white; }
+        .sidebar { display: flex; flex-direction: column; gap: 30px; }
+        .panel-box { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 25px; }
+        .panel-box h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
+        #mapa-real-google { width: 100%; height: 240px; border-radius: 8px; border: 1px solid #ccc; margin-top: 15px; background: #fff; }
+        .btn-go-calc { width: 100%; background: var(--nexus-blue); color: black; border: none; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; text-align: center; text-decoration: none; display: block; margin-top: 15px; }
+        .btn-track { width: 100%; background: #FF0000; color: white; border: none; padding: 12px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+        .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1c1c1c; }
+        .total-preview { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--rd-red); font-weight: bold; text-align: right; margin-top: 15px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-container { background: #0a0a0a; border: 2px solid #222; border-top: 4px solid var(--rd-red); width: 100%; max-width: 850px; border-radius: 12px; padding: 30px; position: relative; box-shadow: 0 0 30px rgba(255,0,0,0.15); animation: zoomIn 0.25s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #555; font-size: 1.8rem; cursor: pointer; }
+        .modal-close:hover { color: var(--rd-red); }
+        .modal-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; margin-top: 15px; }
+        .modal-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
+        .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.8rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .modal-price { font-family: 'Orbitron'; font-size: 2rem; color: var(--nexus-blue); font-weight: bold; margin: 15px 0; }
+        .modal-desc-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #555; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
+        .modal-desc-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-top: 5px; text-align: justify; }
+        .modal-actions { margin-top: 25px; display: flex; gap: 15px; }
     </style>
-
-
-
+</head>
+<body>
+<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
+                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
+                System Online | Secure Encrypted
+            </span>
+        </div>
+        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 4px; border: 1px solid #222; overflow: hidden;">
+            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #300000 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #00d2ff 0%, #002d3a 100%); filter: drop-shadow(0 0 4px #00d2ff); animation: orbitH2 4s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #fff 0%, #444 100%); filter: drop-shadow(0 0 3px #fff); animation: orbitH3 2.5s infinite linear;"></div>
+        </div>
+    </div>
+    <style>
+        @keyframes orbitH1 { 0% { transform: rotate(0deg) translateX(15px); } 100% { transform: rotate(360deg) translateX(15px); } }
+        @keyframes orbitH2 { 0% { transform: rotate(360deg) translateX(22px); } 100% { transform: rotate(0deg) translateX(22px); } }
+        @keyframes orbitH3 { 0% { transform: rotate(120deg) translateX(10px); } 100% { transform: rotate(480deg) translateX(10px); } }
+        @keyframes pulseGlow { 0% { opacity: 0.4; filter: drop-shadow(0 0 1px #25D366); } 100% { opacity: 1; filter: drop-shadow(0 0 5px #25D366); } }
+        nav { display: flex; gap: 25px; align-items: center; }
+        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
+        nav a:hover, nav a.active { color: #FF0000; }
+    </style>
     <nav>
-
-
-
-    <a href="index.html" id="nav-home">E-Commerce</a>
-
-
-
-    <a href="calc.html" id="nav-calc" style="color: #00d2ff; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
-
-
-
-    <a href="checkout.html" id="nav-pay" style="color: #25D366; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
-
-
-
-</nav>
-
-
-
+        <a href="index.html" id="nav-home">E-Commerce</a>
+        <a href="calc.html" id="nav-calc" style="color: #00d2ff; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
+        <a href="checkout.html" id="nav-pay" style="color: #25D366; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+    </nav>
 </header>
-
-
-
-
-
-
-
-        <section class="hero">
-
-
-
-            <h1>REFERÊNCIA DETERMINANTE</h1>
-
-
-
-            <p>Selecione as mercadorias extras abaixo e avance diretamente para o fechamento do Checkout.</p>
-
-
-
-        </section>
-
-
-
-        
-
-
-
-        <div class="main-layout">
-
-
-
-            <div class="products-section">
-
-
-
-                <h2 class="section-title">Mercadorias em Vitrine</h2>
-
-
-
-                <div class="products-grid" id="grid-produtos"></div>
-
-
-
-            </div>
-
-
-
-            <div class="sidebar">
-
-
-
-                <div class="panel-box">
-
-
-
-                    <h3><i class="fa-solid fa-cart-shopping"></i> Pedido de Extras</h3>
-
-
-
-                    <div id="lista-previa-carrinho" style="color: #aaa; font-size: 0.9rem;">Nenhum item selecionado.</div>
-
-
-
-                    <div class="total-preview" id="preco-total-previa">TOTAL A PAGAR: 0.00€</div>
-
-
-
-                    <a href="checkout.html" class="btn-go-calc">AVANÇAR PARA CHECKOUT</a>
-
-
-
-                </div>
-
-
-
-                <div class="panel-box">
-
-
-
-                    <h3><i class="fa-solid fa-map-location-dot"></i> Localização de Carga Viva</h3>
-
-
-
-                    <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido (Preencha no Checkout)</div>
-
-
-
-                    <div id="mapa-real-google"></div>
-
-
-
-                    <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga</button>
-
-
-
-                </div>
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        <div class="modal-overlay" id="modalProduto" onclick="fecharGuiaProduto(event)">
-
-
-
-            <div class="modal-container" onclick="event.stopPropagation()">
-
-
-
-                <button class="modal-close" onclick="ocultarModal()">&times;</button>
-
-
-
-                <div class="modal-layout" id="modal-conteudo"></div>
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        <script>
-
-
-
-            let mapa, markerDispositivo, watchId = null;
-
-
-
-            const centroRD = { lat: 41.1579, lng: -8.6291 };
-
-
-
-
-
-
-
-            function inicializarMapaReal() {
-
-
-
-                mapa = new google.maps.Map(document.getElementById("mapa-real-google"), { zoom: 13, center: centroRD });
-
-
-
-                new google.maps.Marker({ position: centroRD, map: mapa, title: "Armazém Central RD" });
-
-
-
-                const moradaSalva = localStorage.getItem("rd_morada_cliente");
-
-
-
-                if(moradaSalva) {
-
-
-
-                    document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
-
-
-
-                    tracarRotaGeocodificada(moradaSalva);
-
-
-
-                }
-
-
-
-            }
-
-
-
-
-
-
-
-            function tracarRotaGeocodificada(morada) {
-
-
-
-                const geocoder = new google.maps.Geocoder();
-
-
-
-                geocoder.geocode({ address: morada }, (results, status) => {
-
-
-
-                    if (status === "OK") {
-
-
-
-                        const localCliente = results[0].geometry.location;
-
-
-
-                        new google.maps.Marker({ position: localCliente, map: mapa, title: "Entrega do Cliente" });
-
-
-
-                        const rotaLinha = new google.maps.Polyline({
-
-
-
-                            path: [centroRD, localCliente], geodesic: true, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 4
-
-
-
-                        });
-
-
-
-                        rotaLinha.setMap(mapa);
-
-
-
-                        const bounds = new google.maps.LatLngBounds();
-
-
-
-                        bounds.extend(centroRD); bounds.extend(localCliente);
-
-
-
-                        mapa.fitBounds(bounds);
-
-
-
-                    }
-
-
-
-                });
-
-
-
-            }
-
-
-
-
-
-
-
-            function alternarRastreamentoGpsReal() {
-
-
-
-                const btn = document.getElementById("btnGps");
-
-
-
-                if (watchId !== null) {
-
-
-
-                    navigator.geolocation.clearWatch(watchId); watchId = null;
-
-
-
-                    btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-
-
-
-                    return alert("Rastreamento encerrado.");
-
-
-
-                }
-
-
-
-                if (!navigator.geolocation) return alert("GPS indisponível.");
-
-
-
-                btn.className = "btn-track active"; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
-
-
-
-                watchId = navigator.geolocation.watchPosition((pos) => {
-
-
-
-                    const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-
-
-
-                    if (!markerDispositivo) {
-
-
-
-                        markerDispositivo = new google.maps.Marker({ position: coords, map: mapa, title: "Carga em Rota" });
-
-
-
-                    } else { markerDispositivo.setPosition(coords); }
-
-
-
-                    mapa.setCenter(coords);
-
-
-
-                }, (err) => {
-
-
-
-                    btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-
-
-
-                    watchId = null;
-
-
-
-                }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
-
-
-
-            }
-
-
-
-
-
-
-
-            const bancoInicial = [
-
-
-
-                { 
-
-
-
-                    id: "p1", 
-
-
-
-                    nome: "Placa Pladur Standard", 
-
-
-
-                    preco: 12.50, 
-
-
-
-                    unidade: "un", 
-
-
-
-                    foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400",
-
-
-
-                    descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos. Possui excelente acabamento mecânico para pintura ou cerâmica. Placas de gesso laminado compostas por uma alma de gesso de alta densidade revestida por lâminas de cartão de elevada resistência mecânica e durabilidade estrutural."
-
-
-
-                },
-
-
-
-                { 
-
-
-
-                    id: "p2", 
-
-
-
-                    nome: "Perfil Montante 45mm", 
-
-
-
-                    preco: 3.80, 
-
-
-
-                    unidade: "m", 
-
-
-
-                    foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400",
-
-
-
-                    descricao: "Perfil metálico montante estrutural em aço galvanizado, com secção em C de 45mm. Projetado especificamente para atuar como montante vertical em estruturas de gesso cartonado (Pladur). Dispõe de perfurações estrategicamente espaçadas para a passagem limpa e segura de instalações elétricas e hidráulicas internas."
-
-
-
-                }
-
-
-
-            ];
-
-
-
-            
-
-
-
-            if (!localStorage.getItem("rd_mercadorias")) localStorage.setItem("rd_mercadorias", JSON.stringify(bancoInicial));
-
-
-
-            if (!localStorage.getItem("rd_selecionados")) localStorage.setItem("rd_selecionados", JSON.stringify([]));
-
-
-
-
-
-
-
-            function carregarVitrine() {
-
-
-
-                const grid = document.getElementById('grid-produtos'); grid.innerHTML = "";
-
-
-
-                const produtos = JSON.parse(localStorage.getItem("rd_mercadorias"));
-
-
-
-                const selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
-
-
-
-
-
-
-
-                produtos.forEach(p => {
-
-
-
-                    const sel = selecionados.find(s => s.nome === p.nome);
-
-
-
-                    const classBtn = sel ? "btn-buy selected" : "btn-buy";
-
-
-
-                    const textoBtn = sel ? "Selecionado" : "Incluir no Pedido";
-
-
-
-                    const valorQtd = sel ? sel.qtd : 1;
-
-
-
-
-
-
-
-                    grid.innerHTML += `
-
-
-
-                        <div class="product-card" onclick="exibirGuiaProduto('${p.id}')">
-
-
-
-                            <img class="product-img" src="${p.foto}" alt="${p.nome}">
-
-
-
-                            <h3>${p.nome}</h3>
-
-
-
-                            <div class="price">${p.preco.toFixed(2)}€ / ${p.unidade}</div>
-
-
-
-                            <div class="qty-control" onclick="event.stopPropagation()">
-
-
-
-                                <input type="number" id="qty-${p.id}" value="${valorQtd}" min="1" class="qty-input" onchange="atualizarQtdReal('${p.nome}', this.value, '${p.id}')">
-
-
-
-                            </div>
-
-
-
-                            <button class="${classBtn}" id="btn-${p.id}" onclick="event.stopPropagation(); alternarSelecao('${p.nome}', ${p.preco}, 'qty-${p.id}', '${p.id}')">${textoBtn}</button>
-
-
-
-                        </div>
-
-
-
-                    `;
-
-
-
-                });
-
-
-
-                calcularTotalPainelLateral();
-
-
-
-            }
-
-
-
-
-
-
-
-            function exibirGuiaProduto(id) {
-
-
-
-                const produtos = JSON.parse(localStorage.getItem("rd_mercadorias"));
-
-
-
-                const p = produtos.find(item => item.id === id);
-
-
-
-                if(!p) return;
-
-
-
-
-
-
-
-                const selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
-
-
-
-                const sel = selecionados.find(s => s.nome === p.nome);
-
-
-
-                const classBtn = sel ? "btn-buy selected" : "btn-buy";
-
-
-
-                const textoBtn = sel ? "Selecionado" : "Adicionar ao carrinho";
-
-
-
-                const valorQtd = sel ? sel.qtd : 1;
-
-
-
-
-
-
-
-                const conteudo = document.getElementById("modal-conteudo");
-
-
-
-                conteudo.innerHTML = `
-
-
-
-                    <div>
-
-
-
-                        <img src="${p.foto}" class="modal-img" alt="${p.nome}">
-
-
-
-                    </div>
-
-
-
-                    <div class="modal-info">
-
-
-
-                        <h2>${p.nome}</h2>
-
-
-
-                        <div class="modal-desc-title">Descrição</div>
-
-
-
-                        <div class="modal-desc-text">${p.descricao || 'Sem descrição técnica adicional cadastrada.'}</div>
-
-
-
-                        <div class="modal-price">${p.preco.toFixed(2)}€ <span style="font-size:1rem; color:#555;">/ ${p.unidade}</span></div>
-
-
-
-                        
-
-
-
-                        <div style="display:flex; align-items:center; gap: 15px; margin-top:20px;">
-
-
-
-                            <span style="font-family:'Orbitron'; font-size:0.85rem; color:#666;">QUANTIDADE:</span>
-
-
-
-                            <input type="number" id="modal-qty-${p.id}" value="${valorQtd}" min="1" class="qty-input" style="margin:0;" onchange="sincronizarQtdModal('${p.id}', this.value, '${p.nome}')">
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <div class="modal-actions">
-
-
-
-                            <button class="${classBtn}" style="flex:1; padding:15px;" onclick="alternarSelecaoModal('${p.nome}', ${p.preco}, 'modal-qty-${p.id}', '${p.id}')">${textoBtn}</button>
-
-
-
-                            <a href="/pagamento" class="btn-go-calc" style="margin:0; flex:1; display:flex; align-items:center; justify-content:center;">COMPRAR AGORA</a>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                `;
-
-
-
-                document.getElementById("modalProduto").style.display = "flex";
-
-
-
-            }
-
-
-
-
-
-
-
-            function ocultarModal() {
-
-
-
-                document.getElementById("modalProduto").style.display = "none";
-
-
-
-            }
-
-
-
-
-
-
-
-            function fecharGuiaProduto(event) {
-
-
-
-                if(event.target.classList.contains('modal-overlay')) ocultarModal();
-
-
-
-            }
-
-
-
-
-
-
-
-            function sincronizarQtdModal(id, valor, nome) {
-
-
-
-                const inputVitrine = document.getElementById(`qty-${id}`);
-
-
-
-                if(inputVitrine) inputVitrine.value = valor;
-
-
-
-                atualizarQtdReal(nome, valor, id);
-
-
-
-            }
-
-
-
-
-
-
-
-            function alternarSelecaoModal(nome, preco, inputId, id) {
-
-
-
-                alternarSelecao(nome, preco, inputId, id);
-
-
-
-                exibirGuiaProduto(id);
-
-
-
-            }
-
-
-
-
-
-
-
-            function alternarSelecao(nome, preco, inputId, id) {
-
-
-
-                const qtd = parseInt(document.getElementById(inputId).value);
-
-
-
-                let selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
-
-
-
-                const index = selecionados.findIndex(s => s.nome === nome);
-
-
-
-                if (index > -1) { selecionados.splice(index, 1); }
-
-
-
-                else { selecionados.push({ nome: nome, preco: preco, qtd: qtd }); }
-
-
-
-                localStorage.setItem("rd_selecionados", JSON.stringify(selecionados));
-
-
-
-                carregarVitrine();
-
-
-
-            }
-
-
-
-
-
-
-
-            function atualizarQtdReal(nome, novaQtd, id) {
-
-
-
-                let selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
-
-
-
-                const item = selecionados.find(s => s.nome === nome);
-
-
-
-                if(item) { item.qtd = parseInt(novaQtd); localStorage.setItem("rd_selecionados", JSON.stringify(selecionados)); }
-
-
-
-                calcularTotalPainelLateral();
-
-
-
-            }
-
-
-
-
-
-
-
-            function calcularTotalPainelLateral() {
-
-
-
-                const selecionados = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
-
-
-
-                const container = document.getElementById("lista-previa-carrinho");
-
-
-
-                const totalDisplay = document.getElementById("preco-total-previa");
-
-
-
-                if(selecionados.length === 0) { container.innerHTML = "Nenhum produto selecionado."; totalDisplay.innerText = "TOTAL A PAGAR: 0.00€"; return; }
-
-
-
-                container.innerHTML = ""; let soma = 0;
-
-
-
-                selecionados.forEach(s => {
-
-
-
-                    const sub = s.preco * s.qtd; soma += sub;
-
-
-
-                    container.innerHTML += '<div class="summary-item"><span>' + s.qtd + 'x ' + s.nome + '</span><strong>' + sub.toFixed(2) + '€</strong></div>';
-
-
-
-                });
-
-
-
-                totalDisplay.innerText = "TOTAL A PAGAR: " + soma.toFixed(2) + "€";
-
-
-
-                localStorage.setItem("rd_carrinho_total", soma.toFixed(2));
-
-
-
-            }
-
-
-
-            carregarVitrine();
-
-
-
-        </script>
-
-
-
-    </body>
-
-
-
-    </html>
-
-
-
-    
-
-
-
-<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 50px 40px 20px 40px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
-
-
-
-    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #111; padding-bottom: 40px;">
-
-
-
-        <div>
-
-
-
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
-
-
-
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">
-
-
-
-                A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos. Operamos com uma infraestrutura inteligente e encriptada para garantir o fornecimento cirúrgico de materiais industriais, pladur e insumos de alta engenharia diretamente no coração da sua obra.
-
-
-
-            </p>
-
-
-
-        </div>
-
-
-
-        <div>
-
-
-
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
-
-
-
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">
-
-
-
-                Plataforma Logística Industrial RD<br>
-
-
-
-                Rua de Santa Catarina, Pavilhão 400<br>
-
-
-
-                4000-443 Porto, Portugal<br>
-
-
-
-                <span style="color: #fff; font-weight: bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span>
-
-
-
-            </p>
-
-
-
-        </div>
-
-
-
-        <div>
-
-
-
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
-
-
-
-            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-
-
-
-                <a href="https://facebook.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#FF0000'; this.style.color='#FF0000'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
-
-
-
-                <a href="https://instagram.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#00d2ff'; this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
-
-
-
-                <a href="https://linkedin.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#25D366'; this.style.color='#25D366'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
-
-
-
-            </div>
-
-
-
-            <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
-
-
-
-        </div>
-
-
-
+<section class="hero">
+    <h1>REFERÊNCIA DETERMINANTE</h1>
+    <p>Selecione as mercadorias extras abaixo e avance diretamente para o fechamento do Checkout.</p>
+</section>
+<div class="main-layout">
+    <div class="products-section">
+        <h2 class="section-title">Mercadorias em Vitrine</h2>
+        <div class="products-grid" id="grid-produtos"></div>
     </div>
-
-
-
-    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
-
-
-
-        <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
-
-
-
-        <span>Licença de Operação Logística Certificada nº 44102/RD</span>
-
-
-
+    <div class="sidebar">
+        <div class="panel-box">
+            <h3><i class="fa-solid fa-cart-shopping"></i> Pedido de Extras</h3>
+            <div id="lista-previa-carrinho" style="color: #aaa; font-size: 0.9rem;">Nenhum item selecionado.</div>
+            <div class="total-preview" id="preco-total-previa">TOTAL A PAGAR: 0.00€</div>
+            <a href="checkout.html" class="btn-go-calc">AVANÇAR PARA CHECKOUT</a>
+        </div>
+        <div class="panel-box">
+            <h3><i class="fa-solid fa-map-location-dot"></i> Localização de Carga Viva</h3>
+            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido (Preencha no Checkout)</div>
+            <div id="mapa-real-google"></div>
+            <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga</button>
+        </div>
     </div>
-
-
-
-</footer><script>
-
-
-
-    window.addEventListener('load', () => {
-
-
-
-        // IDs que deves colocar no teu HTML: <h1 id="hero-titulo">...</h1>
-
-
-
-        const maps = {
-
-
-
-            "hero-titulo": "rd_titulo",
-
-
-
-            "hero-sub": "rd_sub",
-
-
-
-            "footer-text": "rd_footer"
-
-
-
-        };
-
-
-
-        
-
-
-
-        for (const [id, key] of Object.entries(maps)) {
-
-
-
-            const valor = localStorage.getItem(key);
-
-
-
-            if (valor) document.getElementById(id).innerText = valor;
-
-
-
+</div>
+<div class="modal-overlay" id="modalProduto" onclick="fecharGuiaProduto(event)">
+    <div class="modal-container" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="ocultarModal()">&times;</button>
+        <div class="modal-layout" id="modal-conteudo"></div>
+    </div>
+</div>
+<script>
+    let mapa, markerDispositivo, watchId = null;
+    const centroRD = { lat: 41.1579, lng: -8.6291 };
+    function inicializarMapaReal() {
+        mapa = new google.maps.Map(document.getElementById("mapa-real-google"), { zoom: 13, center: centroRD });
+        new google.maps.Marker({ position: centroRD, map: mapa, title: "Armazém Central RD" });
+        const moradaSalva = localStorage.getItem("rd_morada_cliente");
+        if(moradaSalva) {
+            document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
+            tracarRotaGeocodificada(moradaSalva);
         }
-
-
-
-    });
-
-
-
-</script><script>
-
-
-
-    window.addEventListener('load', () => {
-
-
-
-        const maps = {
-
-
-
-            "hero-titulo": "rd_titulo",
-
-
-
-            "hero-sub": "rd_sub",
-
-
-
-            "footer-text": "rd_footer"
-
-
-
-        };
-
-
-
-        
-
-
-
-        for (const [id, key] of Object.entries(maps)) {
-
-
-
-            const valor = localStorage.getItem(key);
-
-
-
-            if (valor) {
-
-
-
-                const el = document.getElementById(id);
-
-
-
-                if(el) el.innerText = valor;
-
-
-
+    }
+    function tracarRotaGeocodificada(morada) {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: morada }, (results, status) => {
+            if (status === "OK") {
+                const localCliente = results[0].geometry.location;
+                new google.maps.Marker({ position: localCliente, map: mapa, title: "Entrega do Cliente" });
+                const rotaLinha = new google.maps.Polyline({
+                    path: [centroRD, localCliente], geodesic: true, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 4
+                });
+                rotaLinha.setMap(mapa);
+                const bounds = new google.maps.LatLngBounds();
+                bounds.extend(centroRD); bounds.extend(localCliente);
+                mapa.fitBounds(bounds);
             }
-
-
-
+        });
+    }
+    function alternarRastreamentoGpsReal() {
+        const btn = document.getElementById("btnGps");
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId); watchId = null;
+            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
+            return alert("Rastreamento encerrado.");
         }
-
-
-
-    });
-
-
-
-</script><script>
-
-
-
-    // ESTA FUNÇÃO FAZ A PONTE ENTRE O PAINEL E O SITE
-
-
-
-    window.addEventListener('load', () => {
-
-
-
-        // 1. Títulos e Textos
-
-
-
-        const rd_titulo = localStorage.getItem("rd_titulo");
-
-
-
-        const rd_sub = localStorage.getItem("rd_sub");
-
-
-
-        const rd_footer = localStorage.getItem("rd_footer");
-
-
-
-
-
-
-
-        // Substituir no HTML (certifique-se que estes IDs existem no seu HTML)
-
-
-
-        if (rd_titulo) document.getElementById('hero-titulo').innerText = rd_titulo;
-
-
-
-        if (rd_sub) document.getElementById('hero-sub').innerText = rd_sub;
-
-
-
-        if (rd_footer) document.getElementById('footer-text').innerText = rd_footer;
-
-
-
-
-
-
-
-        // 2. Carregar produtos na vitrine (se tiver uma secção de vitrine)
-
-
-
-        const prods = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-
-
-
-        const vitrine = document.getElementById('vitrine-produtos');
-
-
-
-        if (vitrine && prods.length > 0) {
-
-
-
-            vitrine.innerHTML = prods.map(p => `
-
-
-
-                <div class="produto-card">
-
-
-
-                    <img src="${p.foto}" width="100">
-
-
-
+        if (!navigator.geolocation) {
+            return alert("GPS indisponível.");
+        }
+        btn.className = "btn-track active"; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
+        watchId = navigator.geolocation.watchPosition((pos) => {
+            const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            if (!markerDispositivo) {
+                markerDispositivo = new google.maps.Marker({ position: coords, map: mapa, title: "Carga em Rota" });
+            } else { markerDispositivo.setPosition(coords); }
+            mapa.setCenter(coords);
+        }, (err) => {
+            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
+            watchId = null;
+        }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+    }
+    const bancoInicial = [
+        { 
+            id: "p1", 
+            nome: "Placa Pladur Standard", 
+            preco: "12.50", 
+            unidade: "un", 
+            foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400",
+            descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos. Possui excelente acabamento mecânico para pintura ou cerâmica. Placas de gesso laminado compostas por uma alma de gesso de alta densidade revestida por lâminas de cartão de elevada resistência mecânica e durabilidade estrutural."
+        },
+        { 
+            id: "p2", 
+            nome: "Perfil Montante 45mm", 
+            preco: "3.80", 
+            unidade: "m", 
+            foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400",
+            descricao: "Perfil metálico montante estrutural em aço galvanizado, com secção em C de 45mm. Projetado especificamente para atuar como montante vertical em estruturas de gesso cartonado (Pladur). Dispõe de perfurações estrategicamente espaçadas para a passagem limpa e segura de instalações elétricas e hidráulicas internas."
+        }
+    ];
+    if (!localStorage.getItem("rd_mercadorias")) localStorage.setItem("rd_mercadorias", JSON.stringify(bancoInicial));
+    if (!localStorage.getItem("rd_selecionados")) localStorage.setItem("rd_selecionados", JSON.stringify([]));
+    function carregarVitrine() {
+        const grid = document.getElementById('grid-produtos'); grid.innerHTML = "";
+        const produtos = JSON.parse(localStorage.getItem("rd_mercadorias"));
+        const selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
+        produtos.forEach(p => {
+            const sel = selecionados.find(s => s.nome === p.nome);
+            const classBtn = sel ? "btn-buy selected" : "btn-buy";
+            const textoBtn = sel ? "Selecionado" : "Incluir no Pedido";
+            const valorQtd = sel ? sel.qtd : 1;
+            grid.innerHTML += `
+                <div class="product-card" onclick="exibirGuiaProduto('${p.id}')">
+                    <img class="product-img" src="${p.foto}" alt="${p.nome}">
                     <h3>${p.nome}</h3>
-
-
-
-                    <p>${p.desc}</p>
-
-
-
-                    <span>${p.preco}€</span>
-
-
-
+                    <div class="price">${parseFloat(p.preco).toFixed(2)}€ / ${p.unidade}</div>
+                    <div class="qty-control" onclick="event.stopPropagation()">
+                        <input type="number" id="qty-${p.id}" value="${valorQtd}" min="1" class="qty-input" onchange="atualizarQtdReal('${p.nome}', this.value, '${p.id}')">
+                    </div>
+                    <button class="${classBtn}" id="btn-${p.id}" onclick="event.stopPropagation(); alternarSelecao('${p.nome}', parseFloat(${p.preco}), 'qty-${p.id}', '${p.id}')">${textoBtn}</button>
                 </div>
-
-
-
-            `).join('');
-
-
-
-        }
-
-
-
-    });
-
-
-
+            `;
+        });
+        calcularTotalPainelLateral();
+    }
+    function exibirGuiaProduto(id) {
+        const produtos = JSON.parse(localStorage.getItem("rd_mercadorias"));
+        const p = produtos.find(item => item.id === id);
+        if(!p) return;
+        const selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
+        const sel = selecionados.find(s => s.nome === p.nome);
+        const classBtn = sel ? "btn-buy selected" : "btn-buy";
+        const textoBtn = sel ? "Selecionado" : "Adicionar ao carrinho";
+        const valorQtd = sel ? sel.qtd : 1;
+        const conteudo = document.getElementById("modal-conteudo");
+        conteudo.innerHTML = `
+            <div>
+                <img src="${p.foto}" class="modal-img" alt="${p.nome}">
+            </div>
+            <div class="modal-info">
+                <h2>${p.nome}</h2>
+                <div class="modal-desc-title">Descrição</div>
+                <div class="modal-desc-text">${p.descricao || 'Sem descrição técnica adicional cadastrada.'}</div>
+                <div class="modal-price">${parseFloat(p.preco).toFixed(2)}€ <span style="font-size:1rem; color:#555;">/ ${p.unidade}</span></div>
+                <div style="display:flex; align-items:center; gap: 15px; margin-top:20px;">
+                    <span style="font-family:'Orbitron'; font-size:0.85rem; color:#666;">QUANTIDADE:</span>
+                    <input type="number" id="modal-qty-${p.id}" value="${valorQtd}" min="1" class="qty-input" style="margin:0;" onchange="sincronizarQtdModal('${p.id}', this.value, '${p.nome}')">
+                </div>
+                <div class="modal-actions">
+                    <button class="${classBtn}" style="flex:1; padding:15px;" onclick="alternarSelecaoModal('${p.nome}', ${p.preco}, 'modal-qty-${p.id}', '${p.id}')">${textoBtn}</button>
+                    <a href="/pagamento" class="btn-go-calc" style="margin:0; flex:1; display:flex; align-items:center; justify-content:center;">COMPRAR AGORA</a>
+                </div>
+            </div>
+        `;
+        document.getElementById("modalProduto").style.display = "flex";
+    }
+    function ocultarModal() {
+        document.getElementById("modalProduto").style.display = "none";
+    }
+    function fecharGuiaProduto(event) {
+        if(event.target.classList.contains('modal-overlay')) ocultarModal();
+    }
+    function sincronizarQtdModal(id, valor, nome) {
+        const inputVitrine = document.getElementById(`qty-${id}`);
+        if(inputVitrine) inputVitrine.value = valor;
+        atualizarQtdReal(nome, valor, id);
+    }
+    function alternarSelecaoModal(nome, preco, inputId, id) {
+        alternarSelecao(nome, preco, inputId, id);
+        exibirGuiaProduto(id);
+    }
+    function alternarSelecao(nome, preco, inputId, id) {
+        const qtd = parseInt(document.getElementById(inputId).value);
+        let selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
+        const index = selecionados.findIndex(s => s.nome === nome);
+        if (index > -1) { selecionados.splice(index, 1); }
+        else { selecionados.push({ nome: nome, preco: parseFloat(preco), qtd: qtd }); }
+        localStorage.setItem("rd_selecionados", JSON.stringify(selecionados));
+        carregarVitrine();
+    }
+    function atualizarQtdReal(nome, novaQtd, id) {
+        let selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
+        const item = selecionados.find(s => s.nome === nome);
+        if(item) { item.qtd = parseInt(novaQtd); localStorage.setItem("rd_selecionados", JSON.stringify(selecionados)); }
+        calcularTotalPainelLateral();
+    }
+    function calcularTotalPainelLateral() {
+        const selecionados = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
+        const container = document.getElementById("lista-previa-carrinho");
+        const totalDisplay = document.getElementById("preco-total-previa");
+        if(selecionados.length === 0) { container.innerHTML = "Nenhum produto selecionado."; totalDisplay.innerText = "TOTAL A PAGAR: 0.00€"; return; }
+        container.innerHTML = ""; 
+        let soma = 0;
+        selecionados.forEach(s => {
+            const sub = s.preco * s.qtd; soma += sub;
+            container.innerHTML += '<div class="summary-item"><span>' + s.qtd + 'x ' + s.nome + '</span><strong>' + sub.toFixed(2) + '€</strong></div>';
+        });
+        totalDisplay.innerText = "TOTAL A PAGAR: " + soma.toFixed(2) + "€";
+        localStorage.setItem("rd_carrinho_total", soma.toFixed(2));
+    }
+    carregarVitrine();
 </script>
-
-
-
-
-
-
-
-    </body>
-
-
-
-    </html>
+</body>
+<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 50px 40px 20px 40px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
+    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #111; padding-bottom: 40px;">
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">
+                A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos. Operamos com uma infraestrutura inteligente e encriptada para garantir o fornecimento cirúrgico de materiais industriais, pladur e insumos de alta engenharia diretamente no coração da sua obra.
+            </p>
+        </div>
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                Plataforma Logística Industrial RD<br>
+                Rua de Santa Catarina, Pavilhão 400<br>
+                4000-443 Porto, Portugal<br>
+                <span style="color: #fff; font-weight: bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span>
+            </p>
+        </div>
+        <div>
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <a href="https://facebook.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#FF0000'; this.style.color='#FF0000'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#00d2ff'; this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#25D366'; this.style.color='#25D366'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+            <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
+        </div>
+    </div>
+    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
+        <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
+        <span>Licença de Operação Logística Certificada nº 44102/RD</span>
+    </div>
+</footer>
 
