@@ -1,48 +1,62 @@
 from decimal import Decimal, localcontext
-from typing import Union
+from typing import Union, Tuple
 
-def calcular_orcamento_completo(area: Union[int, float]) -> None:
-    """Calcula o orçamento completo
+def calculate_full_budget(area: Union[int, float]) -> Tuple[Decimal, Decimal]:
+    """
+    Calculates the total budget for drywall construction based on the area.
 
     Args:
-        area (Union[int, float]): Área da obra em metros quadrados (M²)
+        area (Union[int, float]): Area of the work in square meters (m²).
+
+    Returns:
+        Tuple[Decimal, Decimal]: A tuple containing the raw subtotal and the formatted total.
     """
     if area <= 0:
-        raise ValueError("A área deve ser maior que zero")
+        raise ValueError("The area must be greater than zero.")
 
     with localcontext():
-        P_PLACA = Decimal('12.50')
-        P_MONTANTE = Decimal('3.80')
-        P_RAIA = Decimal('3.20')
-        P_PARAFUSO_PM = Decimal('0.05')
-        P_PARAFUSO_LN = Decimal('0.04')
-        P_MASSA = Decimal('1.20')
-        P_MANTA = Decimal('4.50')
-        P_FITA = Decimal('0.15')
-        P_TRATAMENTO = Decimal('0.65')
+        # Material unit prices
+        PRICE_PLATE = Decimal('12.50')
+        PRICE_STUD = Decimal('3.80')
+        PRICE_TRACK = Decimal('3.20')
+        PRICE_SCREW_PM = Decimal('0.05')
+        PRICE_SCREW_LN = Decimal('0.04')
+        PRICE_COMPOUND = Decimal('1.20')
+        PRICE_INSULATION = Decimal('4.50')
+        PRICE_TAPE = Decimal('0.15')
+        PRICE_TREATMENT = Decimal('0.65')
 
-        qPla = -(-area // Decimal('2.88')).to_integral_value()
-        qMon = -(-area * Decimal('2.1') // Decimal('1')).to_integral_value()
-        qRai = -(-area * Decimal('0.9') // Decimal('1')).to_integral_value()
-        qPM = -(-area * Decimal('18') // Decimal('1')).to_integral_value()
-        qLN = -(-area * Decimal('12') // Decimal('1')).to_integral_value()
-        qMas = (area * Decimal('0.5')).quantize(Decimal('1'))
-        qMan = -(-area * Decimal('1.05') // Decimal('1')).to_integral_value()
-        qFit = -(-area * Decimal('1.6') // Decimal('1')).to_integral_value()
-        qTra = -(-area // Decimal('1')).to_integral_value()
+        # Quantity calculations
+        # Using -(-x // y) for ceiling division
+        qty_plates = -(-Decimal(str(area)) // Decimal('2.88'))
+        qty_studs = -(-Decimal(str(area)) * Decimal('2.1') // Decimal('1'))
+        qty_tracks = -(-Decimal(str(area)) * Decimal('0.9') // Decimal('1'))
+        qty_screws_pm = -(-Decimal(str(area)) * Decimal('18') // Decimal('1'))
+        qty_screws_ln = -(-Decimal(str(area)) * Decimal('12') // Decimal('1'))
+        qty_compound = (Decimal(str(area)) * Decimal('0.5')).quantize(Decimal('1'))
+        qty_insulation = -(-Decimal(str(area)) * Decimal('1.05') // Decimal('1'))
+        qty_tape = -(-Decimal(str(area)) * Decimal('1.6') // Decimal('1'))
+        qty_treatment = -(-Decimal(str(area)) // Decimal('1'))
 
-        tPla = qPla * P_PLACA
-        tMon = qMon * P_MONTANTE
-        tRai = qRai * P_RAIA
-        tPM = qPM * P_PARAFUSO_PM
-        tLN = qLN * P_PARAFUSO_LN
-        tMas = qMas * P_MASSA
-        tMan = qMan * P_MANTA
-        tFit = qFit * P_FITA
-        tTra = qTra * P_TRATAMENTO
+        # Cost calculations
+        cost_plates = qty_plates * PRICE_PLATE
+        cost_studs = qty_studs * PRICE_STUD
+        cost_tracks = qty_tracks * PRICE_TRACK
+        cost_screws_pm = qty_screws_pm * PRICE_SCREW_PM
+        cost_screws_ln = qty_screws_ln * PRICE_SCREW_LN
+        cost_compound = qty_compound * PRICE_COMPOUND
+        cost_insulation = qty_insulation * PRICE_INSULATION
+        cost_tape = qty_tape * PRICE_TAPE
+        cost_treatment = qty_treatment * PRICE_TREATMENT
 
-        subtotalPladur = tPla + tMon + tRai + tPM + tLN + tMas + tMan + tFit + tTra
-        total_formatado = subtotalPladur.quantize(Decimal('0.01'))
+        # Total calculation
+        subtotal = (
+            cost_plates + cost_studs + cost_tracks + cost_screws_pm + 
+            cost_screws_ln + cost_compound + cost_insulation + 
+            cost_tape + cost_treatment
+        )
+        
+        formatted_total = subtotal.quantize(Decimal('0.01'))
 
-        return subtotalPladur, total_formatado
+        return subtotal, formatted_total
 
