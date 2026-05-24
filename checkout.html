@@ -1,16 +1,25 @@
 
-def carregar_dados_checkout() -> None:
-    """Carrega os dados do checkout a partir do armazenamento local e exibe na interface do usuário."""
+def load_checkout_data() -> None:
+    """Loads checkout data from local storage and updates the user interface."""
+    # Retrieve totals and items from local storage
     total_vitrine: Decimal = Decimal(localStorage.getItem("rd_carrinho_total") or "0.00")
-    itens_extras: List[Dict[str, Any]] = json.loads(localStorage.getItem("rd_selecionados") or "[]")
+    items_extras: List[Dict[str, Any]] = json.loads(localStorage.getItem("rd_selecionados") or "[]")
+    
     container: HTMLElement = document.getElementById("lista-checkout-itens")
-    morada_salva: Optional[str] = localStorage.getItem("rd_morada_cliente")
-    if morada_salva:
-        document.getElementById("rd-morada").value = morada_salva
-    if not itens_extras:
-        container.innerHTML = "<p style='color:#555;'>Manifesto de vitrine vazio.</p>"
+    saved_address: Optional[str] = localStorage.getItem("rd_morada_cliente")
+    
+    # Populate address field if available
+    if saved_address:
+        document.getElementById("rd-morada").value = saved_address
+        
+    # Render item list or empty state
+    if not items_extras:
+        container.innerHTML = "<p style='color:#555;'>No items selected.</p>"
     else:
         container.innerHTML = ""
-        for item in itens_extras:
-            container.innerHTML += f'<div class="order-item"><span>• {item["qtd"]}x {item["nome"]}</span><strong>{(Decimal(item["preco"]) * Decimal(item["qtd"])).quantize(Decimal("0.00"))}€</strong></div>'
+        for item in items_extras:
+            subtotal = (Decimal(item["preco"]) * Decimal(item["qtd"])).quantize(Decimal("0.00"))
+            container.innerHTML += f'<div class="order-item"><span>• {item["qtd"]}x {item["nome"]}</span><strong>{subtotal}€</strong></div>'
+            
+    # Update total display
     document.getElementById("total-checkout-val").innerText = f'{total_vitrine.quantize(Decimal("0.00"))}€'
