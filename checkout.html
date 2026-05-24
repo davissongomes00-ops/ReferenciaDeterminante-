@@ -1,25 +1,42 @@
+import json
+import decimal
+from typing import List, Dict, Any, Optional
 
 def load_checkout_data() -> None:
-    """Loads checkout data from local storage and updates the user interface."""
-    # Retrieve totals and items from local storage
-    total_vitrine: Decimal = Decimal(localStorage.getItem("rd_carrinho_total") or "0.00")
-    items_extras: List[Dict[str, Any]] = json.loads(localStorage.getItem("rd_selecionados") or "[]")
-    
-    container: HTMLElement = document.getElementById("lista-checkout-itens")
-    saved_address: Optional[str] = localStorage.getItem("rd_morada_cliente")
-    
-    # Populate address field if available
-    if saved_address:
-        document.getElementById("rd-morada").value = saved_address
-        
-    # Render item list or empty state
-    if not items_extras:
-        container.innerHTML = "<p style='color:#555;'>No items selected.</p>"
-    else:
-        container.innerHTML = ""
-        for item in items_extras:
-            subtotal = (Decimal(item["preco"]) * Decimal(item["qtd"])).quantize(Decimal("0.00"))
-            container.innerHTML += f'<div class="order-item"><span>• {item["qtd"]}x {item["nome"]}</span><strong>{subtotal}€</strong></div>'
-            
-    # Update total display
-    document.getElementById("total-checkout-val").innerText = f'{total_vitrine.quantize(Decimal("0.00"))}€'
+    """
+    Loads checkout data, including total and selected items, 
+    and updates the user interface.
+    """
+    try:
+        # Retrieve data from local storage
+        total_vitrine: decimal.Decimal = decimal.Decimal(localStorage.getItem("rd_carrinho_total") or "0.00")
+        items_extras: List[Dict[str, Any]] = json.loads(localStorage.getItem("rd_selecionados") or "[]")
+        container = document.getElementById("lista-checkout-itens")
+        saved_address: Optional[str] = localStorage.getItem("rd_morada_cliente")
+
+        # Update address input if data exists
+        if saved_address:
+            document.getElementById("rd-morada").value = saved_address
+
+        # Render item list or empty state
+        if not items_extras:
+            container.innerHTML = "<p style='color:#555;'>No items in the manifest.</p>"
+        else:
+            container.innerHTML = ""
+            for item in items_extras:
+                # Ensure calculations are precise using Decimal
+                item_total = decimal.Decimal(str(item['preco'])) * decimal.Decimal(str(item['qtd']))
+                container.innerHTML += (
+                    f'<div class="order-item">'
+                    f'<span>• {item["qtd"]}x {item["nome"]}</span>'
+                    f'<strong>{item_total:.2f}€</strong>'
+                    f'</div>'
+                )
+
+        # Update the total display
+        document.getElementById("total-checkout-val").innerText = f'{total_vitrine:.2f}€'
+
+    except (decimal.InvalidOperation, json.JSONDecodeError, AttributeError) as error:
+        # Log error to console for debugging and inform the UI
+        print(f"Error loading checkout data: {error}")
+        container.innerHTML = "<p style='color:red;'>Error loading your order details.</p>"
