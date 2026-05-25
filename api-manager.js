@@ -1,28 +1,20 @@
 /**
  * RD Logistics API Gateway
- * Centralizes all external integrations
  */
 const RD_API = {
-    // Stripe: Redirect to secure Payment Link
-    processPayment: (totalAmount) => {
-        // Substitui pelo teu URL de Checkout real
-        const checkoutUrl = "https://buy.stripe.com/SEU_LINK_AQUI"; 
-        window.location.href = checkoutUrl;
-    },
-
     // Google Maps: Initialize Map
-    initMap: (lat = 40.2033, lng = -8.4103) => {
+    // Agora aceita o ID do elemento alvo para evitar conflitos
+    initMap: (elementId, lat = 41.1579, lng = -8.6291) => {
+        const element = document.getElementById(elementId);
+        if (!element) return console.error(`Elemento ${elementId} não encontrado.`);
+        
         const location = { lat: lat, lng: lng };
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 15,
-            center: location,
-        });
-        new google.maps.Marker({ position: location, map: map });
+        const map = new google.maps.Map(element, { zoom: 15, center: location });
+        new google.maps.Marker({ position: location, map: map, title: "RD Logistics" });
     },
 
-    // LocalStorage Sync: Generic data handler
+    // Centraliza o sync de dados no localStorage
     syncData: (key, data) => {
         localStorage.setItem(key, JSON.stringify(data));
-        console.log(`[RD API] Data synced: ${key}`);
     }
 };
