@@ -39,49 +39,32 @@
         .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #555; font-size: 1.8rem; cursor: pointer; }
         .modal-close:hover { color: var(--rd-red); }
         .modal-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; margin-top: 15px; }
-        .modal-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
-        .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.8rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .modal-price { font-family: 'Orbitron'; font-size: 2rem; color: var(--nexus-blue); font-weight: bold; margin: 15px 0; }
-        .modal-desc-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #555; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
-        .modal-desc-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-top: 5px; text-align: justify; }
-        .modal-actions { margin-top: 25px; display: flex; gap: 15px; }
     </style>
 </head>
 <body>
+
 <header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
     <div style="display: flex; align-items: center; gap: 20px;">
         <div style="display: flex; flex-direction: column; gap: 4px;">
-            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
+            <a href="index.html" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
             <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
-                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
+                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block;"></span>
                 System Online | Secure Encrypted
             </span>
         </div>
-        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 4px; border: 1px solid #222; overflow: hidden;">
-            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #300000 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
-            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #00d2ff 0%, #002d3a 100%); filter: drop-shadow(0 0 4px #00d2ff); animation: orbitH2 4s infinite linear;"></div>
-            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #fff 0%, #444 100%); filter: drop-shadow(0 0 3px #fff); animation: orbitH3 2.5s infinite linear;"></div>
-        </div>
     </div>
-    <style>
-        @keyframes orbitH1 { 0% { transform: rotate(0deg) translateX(15px); } 100% { transform: rotate(360deg) translateX(15px); } }
-        @keyframes orbitH2 { 0% { transform: rotate(360deg) translateX(22px); } 100% { transform: rotate(0deg) translateX(22px); } }
-        @keyframes orbitH3 { 0% { transform: rotate(120deg) translateX(10px); } 100% { transform: rotate(480deg) translateX(10px); } }
-        @keyframes pulseGlow { 0% { opacity: 0.4; filter: drop-shadow(0 0 1px #25D366); } 100% { opacity: 1; filter: drop-shadow(0 0 5px #25D366); } }
-        nav { display: flex; gap: 25px; align-items: center; }
-        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
-        nav a:hover, nav a.active { color: #FF0000; }
-    </style>
     <nav>
-        <a href="index.html" id="nav-home">E-Commerce</a>
-        <a href="calc.html" id="nav-calc" style="color: #00d2ff; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
-        <a href="checkout.html" id="nav-pay" style="color: #25D366; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+        <a href="index.html" style="color: #FF0000; text-decoration: none; font-weight: bold;">E-Commerce</a>
+        <a href="calc.html" style="color: #00d2ff; text-decoration: none; margin-left: 20px;">Calculadora</a>
+        <a href="checkout.html" style="color: #25D366; text-decoration: none; margin-left: 20px;">Checkout</a>
     </nav>
 </header>
+
 <section class="hero">
     <h1>REFERÊNCIA DETERMINANTE</h1>
-    <p>Selecione as mercadorias extras abaixo e avance diretamente para o fechamento do Checkout.</p>
+    <p>Selecione as mercadorias extras abaixo e avance para o fechamento da operação.</p>
 </section>
+
 <div class="main-layout">
     <div class="products-section">
         <h2 class="section-title">Mercadorias em Vitrine</h2>
@@ -91,114 +74,118 @@
         <div class="panel-box">
             <h3><i class="fa-solid fa-cart-shopping"></i> Pedido de Extras</h3>
             <div id="lista-previa-carrinho" style="color: #aaa; font-size: 0.9rem;">Nenhum item selecionado.</div>
-            <div class="total-preview" id="preco-total-previa">TOTAL A PAGAR: 0.00€</div>
+            <div class="total-preview" id="preco-total-previa">TOTAL: 0.00€</div>
             <a href="checkout.html" class="btn-go-calc">AVANÇAR PARA CHECKOUT</a>
         </div>
         <div class="panel-box">
-            <h3><i class="fa-solid fa-map-location-dot"></i> Localização de Carga Viva</h3>
-            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido (Preencha no Checkout)</div>
+            <h3><i class="fa-solid fa-map-location-dot"></i> Rastreamento de Carga</h3>
+            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido</div>
             <div id="mapa-real-google"></div>
             <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga</button>
         </div>
     </div>
 </div>
+
 <div class="modal-overlay" id="modalProduto" onclick="fecharGuiaProduto(event)">
     <div class="modal-container" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="ocultarModal()">&times;</button>
-        <div class="modal-layout" id="modal-conteudo"></div>
+        <div id="modal-conteudo"></div>
     </div>
 </div>
 
-<script src="api-manager.js"></script>
+<script src="js/api-manager.js"></script>
 <script>
-    // Inicialização centralizada do mapa
+    let globalMap, markerDispositivo, watchId = null;
+    const centroRD = { lat: 41.1579, lng: -8.6291 };
+
+    // Inicialização via API Manager
     function initMap() {
         if (typeof RD_API !== 'undefined') {
-            RD_API.initMap("mapa-real-google", 41.1579, -8.6291);
-            // Lógica de carregar morada após init
-            const moradaSalva = localStorage.getItem("rd_morada_cliente");
-            if(moradaSalva) {
-                document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
-            }
+            globalMap = RD_API.initMap("mapa-real-google", centroRD.lat, centroRD.lng);
+            const moradaSalva = RD_API.storage.get("rd_morada_cliente");
+            if(moradaSalva) document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
         }
     }
-</script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=SUA_GOOGLE_API_KEY&callback=initMap"></script>
-<script src="https://js.stripe.com/v3/"></script>
-
-<script>
-    // Lógica interna da página
-    let markerDispositivo, watchId = null;
-    const centroRD = { lat: 41.1579, lng: -8.6291 };
 
     function alternarRastreamentoGpsReal() {
         const btn = document.getElementById("btnGps");
         if (watchId !== null) {
             navigator.geolocation.clearWatch(watchId); watchId = null;
-            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-            return alert("Rastreamento encerrado.");
+            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS';
+            return;
         }
         if (!navigator.geolocation) return alert("GPS indisponível.");
-        btn.className = "btn-track active"; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
         
         watchId = navigator.geolocation.watchPosition((pos) => {
             const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
             if (!markerDispositivo) {
-                markerDispositivo = new google.maps.Marker({ position: coords, map: map, title: "Carga em Rota" });
+                markerDispositivo = new google.maps.Marker({ position: coords, map: globalMap, title: "Carga" });
             } else { markerDispositivo.setPosition(coords); }
-        }, () => {
-            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-            watchId = null;
-        }, { enableHighAccuracy: true });
+            globalMap.setCenter(coords);
+        });
     }
 
     const bancoInicial = [
-        { id: "p1", nome: "Placa Pladur Standard", preco: "12.50", unidade: "un", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400", descricao: "..." },
-        { id: "p2", nome: "Perfil Montante 45mm", preco: "3.80", unidade: "m", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400", descricao: "..." }
+        { id: "p1", nome: "Placa Pladur Standard", preco: "12.50", unidade: "un", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" },
+        { id: "p2", nome: "Perfil Montante 45mm", preco: "3.80", unidade: "m", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" }
     ];
-    if (!localStorage.getItem("rd_mercadorias")) localStorage.setItem("rd_mercadorias", JSON.stringify(bancoInicial));
-    if (!localStorage.getItem("rd_selecionados")) localStorage.setItem("rd_selecionados", JSON.stringify([]));
+
+    if (!RD_API.storage.get("rd_mercadorias")) RD_API.storage.set("rd_mercadorias", bancoInicial);
+    if (!RD_API.storage.get("rd_selecionados")) RD_API.storage.set("rd_selecionados", []);
 
     function carregarVitrine() {
         const grid = document.getElementById('grid-produtos'); grid.innerHTML = "";
-        const produtos = JSON.parse(localStorage.getItem("rd_mercadorias"));
-        const selecionados = JSON.parse(localStorage.getItem("rd_selecionados"));
+        const produtos = RD_API.storage.get("rd_mercadorias");
+        const selecionados = RD_API.storage.get("rd_selecionados") || [];
+
         produtos.forEach(p => {
             const sel = selecionados.find(s => s.nome === p.nome);
             grid.innerHTML += `
                 <div class="product-card" onclick="exibirGuiaProduto('${p.id}')">
                     <img class="product-img" src="${p.foto}" alt="${p.nome}">
                     <h3>${p.nome}</h3>
-                    <div class="price">${parseFloat(p.preco).toFixed(2)}€ / ${p.unidade}</div>
-                    <button class="${sel ? 'btn-buy selected' : 'btn-buy'}">${sel ? 'Selecionado' : 'Incluir'}</button>
+                    <div class="price">${p.preco}€ / ${p.unidade}</div>
+                    <button class="${sel ? 'btn-buy selected' : 'btn-buy'}" onclick="event.stopPropagation(); alternarSelecao('${p.nome}', ${p.preco}, '${p.id}')">
+                        ${sel ? 'Selecionado' : 'Incluir'}
+                    </button>
                 </div>
             `;
         });
         calcularTotalPainelLateral();
     }
-    // ... manter restantes funções auxiliares ...
-    carregarVitrine();
-</script>
 
-<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 50px 40px 20px 40px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
-    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #111; padding-bottom: 40px;">
-        <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos.</p>
-        </div>
-        <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">Rua de Santa Catarina, Pavilhão 400<br>4000-443 Porto, Portugal</p>
-        </div>
-        <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
-            <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
-        </div>
-    </div>
-    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
-        <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
-        <span>Licença de Operação Logística Certificada nº 44102/RD</span>
-    </div>
+    function alternarSelecao(nome, preco, id) {
+        let selecionados = RD_API.storage.get("rd_selecionados") || [];
+        const index = selecionados.findIndex(s => s.nome === nome);
+        if (index > -1) selecionados.splice(index, 1);
+        else selecionados.push({ nome, preco: parseFloat(preco), qtd: 1 });
+        RD_API.storage.set("rd_selecionados", selecionados);
+        carregarVitrine();
+    }
+
+    function calcularTotalPainelLateral() {
+        const selecionados = RD_API.storage.get("rd_selecionados") || [];
+        const container = document.getElementById("lista-previa-carrinho");
+        let soma = 0;
+        container.innerHTML = selecionados.length ? "" : "Nenhum item.";
+        selecionados.forEach(s => {
+            const sub = s.preco * s.qtd; soma += sub;
+            container.innerHTML += `<div class="summary-item"><span>${s.nome}</span><strong>${sub.toFixed(2)}€</strong></div>`;
+        });
+        document.getElementById("preco-total-previa").innerText = "TOTAL: " + soma.toFixed(2) + "€";
+        RD_API.storage.set("rd_carrinho_total", soma.toFixed(2));
+    }
+
+    function fecharGuiaProduto(e) { if(e.target.classList.contains('modal-overlay')) ocultarModal(); }
+    function ocultarModal() { document.getElementById("modalProduto").style.display = "none"; }
+    
+    window.onload = carregarVitrine;
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=SUA_KEY&callback=initMap"></script>
+
+<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 40px; margin-top: 80px; text-align: center; color: #555; font-family: 'Orbitron'; font-size: 0.8rem;">
+    © 2026 RD Logistics. Todos os direitos reservados. Licença nº 44102/RD
 </footer>
 </body>
 </html>
