@@ -2,121 +2,47 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RD Logistics | Pagamento Seguro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Checkout | RD Logistics</title>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="js/api-manager.js"></script>
     <style>
-        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; }
-        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; }
-        .checkout-container { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 40px; max-width: 1200px; margin: auto; padding: 20px; }
-        .box-billing { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 30px; }
-        .box-billing h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
-        .payment-methods { display: flex; gap: 20px; margin: 20px 0; }
-        .method-btn { flex: 1; background: #0f0f0f; border: 1px solid #222; color: white; padding: 18px 15px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s ease; }
-        .method-btn.active { border-color: var(--rd-red); background: rgba(255, 0, 0, 0.05); }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; color: #888; font-family: 'Orbitron'; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; font-size: 1rem; }
-        .btn-pay-execute { width: 100%; background: #25D366; color: white; border: none; padding: 16px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; }
-        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.95rem; }
-        #stripe-card-element { background: #111; padding: 16px; border-radius: 6px; border: 1px solid #333; margin-top: 5px; }
+        body { background: #000; color: #fff; font-family: 'Urbanist'; padding: 50px; }
+        .checkout-box { max-width: 600px; margin: auto; border: 1px solid #333; padding: 40px; }
+        #stripe-card-element { background: #fff; padding: 15px; margin-top: 20px; }
     </style>
 </head>
 <body>
-
-<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
-    <div style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold;">RD. LOGISTICS</div>
-    <nav>
-        <a href="index.html" style="color: white; text-decoration: none;">E-Commerce</a>
-    </nav>
-</header>
-
-<div class="checkout-container">
-    <div class="box-billing">
-        <h3><i class="fa-solid fa-receipt"></i> Resumo Consolidado</h3>
-        <div id="lista-checkout-itens"></div>
-        <div style="margin-top:20px; font-family:'Orbitron'; font-size:1.3rem; color:var(--rd-red);">
-            TOTAL: <span id="total-checkout-val">0.00€</span>
-        </div>
+    <div class="checkout-box">
+        <h1>Pagamento Seguro</h1>
+        <div id="resumo-total"></div>
+        <div id="stripe-card-element"></div>
+        <button id="btn-pay" style="margin-top:20px; padding:15px; width:100%; background:#25D366; border:none; cursor:pointer;">CONFIRMAR PAGAMENTO</button>
     </div>
-    <div class="box-billing">
-        <h3><i class="fa-solid fa-shield-halved"></i> Pagamento</h3>
-        <div class="form-group">
-            <label>MORADA DE ENTREGA</label>
-            <input type="text" id="rd-morada" class="form-input" onchange="RD_API.storage.set('rd_morada_cliente', this.value)">
-        </div>
-        <div class="payment-methods">
-            <button class="method-btn active" id="btn-mbway" onclick="selecionarMetodo('mbway')">MB WAY</button>
-            <button class="method-btn" id="btn-card" onclick="selecionarMetodo('card')">CARTÃO</button>
-        </div>
-        <div id="form-card" style="display: none;">
-            <div id="stripe-card-element"></div>
-            <div id="card-errors" style="color:red; margin-top:10px;"></div>
-        </div>
-        <button class="btn-pay-execute" id="submit-payment-btn" onclick="processarTransacao()">CONFIRMAR E LIQUIDAR</button>
-    </div>
-</div>
 
-<script>
-    let stripeInstance, stripeElements, stripeCardInput;
-    let metodoAtual = 'mbway';
+    <script>
+        const stripe = Stripe("pk_live_SUA_CHAVE_AQUI");
+        const elements = stripe.elements();
+        const card = elements.create('card');
+        card.mount('#stripe-card-element');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const total = RD_API.storage.get("rd_carrinho_total");
-        if (!total) { window.location.href = "index.html"; return; }
-        
-        document.getElementById("total-checkout-val").innerText = total + "€";
-        
-        // Inicializar Stripe com segurança
-        if (typeof Stripe === 'function') {
-            stripeInstance = Stripe("pk_live_SUA_CHAVE_AQUI");
-            stripeElements = stripeInstance.elements();
-            stripeCardInput = stripeElements.create('card', { style: { base: { color: '#fff', fontSize: '16px' } } });
-        }
-    });
-
-    function selecionarMetodo(m) {
-        metodoAtual = m;
-        document.getElementById('form-card').style.display = m === 'card' ? 'block' : 'none';
-        if(m === 'card') stripeCardInput.mount('#stripe-card-element');
-    }
-
-    async function processarTransacao() {
-        const btn = document.getElementById("submit-payment-btn");
-        const morada = RD_API.storage.get("rd_morada_cliente");
-        
-        if (!morada) return alert("Preencha a morada.");
-
-        if (metodoAtual === 'card') {
-            btn.disabled = true;
-            try {
-                const total = RD_API.storage.get("rd_carrinho_total");
-                const data = await RD_API.processarPagamento(total, { morada });
-                
-                const result = await stripeInstance.confirmCardPayment(data.clientSecret, {
-                    payment_method: { card: stripeCardInput }
-                });
-
-                if (result.error) {
-                    document.getElementById('card-errors').innerText = result.error.message;
-                    btn.disabled = false;
-                } else {
-                    RD_API.finalizarSessao();
-                    window.location.href = "sucesso.html";
-                }
-            } catch (e) {
-                alert("Erro no pagamento: " + e.message);
-                btn.disabled = false;
+        document.getElementById('btn-pay').onclick = async () => {
+            const total = RD_API.storage.get("rd_carrinho_total");
+            const res = await fetch('/api/criar-pagamento', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ total }) 
+            });
+            const { clientSecret } = await res.json();
+            
+            const result = await stripe.confirmCardPayment(clientSecret, { payment_method: { card } });
+            
+            if (result.error) {
+                alert(result.error.message);
+            } else {
+                RD_API.finalizarSessao();
+                window.location.href = "sucesso.html";
             }
-        } else {
-            alert("Pedido MB WAY emitido!");
-            RD_API.finalizarSessao();
-            window.location.href = "sucesso.html";
-        }
-    }
-</script>
+        };
+    </script>
 </body>
 </html>
