@@ -2,54 +2,79 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>RD Logistics | Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
-    <script src="js/api-manager.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | E-Commerce</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Urbanist', sans-serif; margin: 0; padding-top: 120px; }
-        /* Header c/ Esferas */
-        .orbit-container { width: 80px; height: 35px; position: relative; border: 1px solid #222; }
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 100px; }
+        
+        /* Cabeçalho e Esferas */
+        header { position: fixed; top: 0; width: 100%; height: 80px; background: #050505; border-bottom: 2px solid var(--rd-red); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; z-index: 1000; }
+        .logo-box { display: flex; align-items: center; gap: 20px; }
+        .orbit-container { width: 80px; height: 35px; position: relative; border: 1px solid #222; border-radius: 4px; display: flex; justify-content: center; align-items: center; }
         .orbit { position: absolute; border-radius: 50%; animation: orbit 3s infinite linear; }
         @keyframes orbit { from { transform: rotate(0deg) translateX(15px); } to { transform: rotate(360deg) translateX(15px); } }
+
+        /* Vitrine */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 40px; max-width: 1200px; margin: auto; }
+        .card { background: #0a0a0a; border: 1px solid #222; padding: 20px; text-align: center; border-radius: 8px; transition: 0.3s; }
+        .card:hover { border-color: var(--rd-red); }
+        .btn-buy { background: #111; color: white; border: 1px solid #444; padding: 12px; width: 100%; cursor: pointer; font-family: 'Orbitron'; margin-top: 15px; }
+        .btn-buy:hover { background: var(--rd-red); }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 40px; }
-        .card { background: #0a0a0a; border: 1px solid #222; padding: 20px; text-align: center; }
-        .btn-buy { background: #FF0000; color: #fff; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; }
+        nav a { color: #fff; text-decoration: none; font-family: 'Orbitron'; margin-left: 20px; }
     </style>
 </head>
 <body>
-    <header style="position:fixed; top:0; width:100%; background:#050505; display:flex; justify-content:space-between; padding:20px; align-items:center; border-bottom:2px solid #FF0000;">
-        <div style="font-family:'Orbitron'; font-size:20px;">RD. LOGISTICS</div>
-        <div class="orbit-container"><div class="orbit" style="width:8px; height:8px; background:#FF0000;"></div></div>
-        <nav><a href="checkout.html" style="color:#25D366; text-decoration:none;">CHECKOUT</a></nav>
+
+    <header>
+        <div class="logo-box">
+            <div style="font-family:'Orbitron'; font-size:22px; color:var(--rd-red);">RD. LOGISTICS</div>
+            <div class="orbit-container">
+                <div class="orbit" style="width:8px; height:8px; background:#FF0000;"></div>
+                <div class="orbit" style="width:6px; height:6px; background:#00d2ff; animation-delay: -1.5s;"></div>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html">E-COMMERCE</a>
+            <a href="calc.html">CALCULADORA</a>
+            <a href="checkout.html" style="color:var(--rd-red);">CHECKOUT</a>
+        </nav>
     </header>
 
-    <div class="grid" id="produtos-container"></div>
+    <div class="grid" id="vitrine"></div>
 
     <script>
         const produtos = [
-            { id: 1, nome: "Placa Pladur", preco: 12.50 },
-            { id: 2, nome: "Perfil 45mm", preco: 3.80 }
+            { id: 1, nome: "Placa Pladur Standard", preco: 12.50 },
+            { id: 2, nome: "Perfil Montante 45mm", preco: 3.80 },
+            { id: 3, nome: "Parafusos Estruturais", preco: 5.20 }
         ];
 
         function renderizar() {
-            const container = document.getElementById('produtos-container');
-            container.innerHTML = produtos.map(p => `
+            const vitrine = document.getElementById('vitrine');
+            vitrine.innerHTML = produtos.map(p => `
                 <div class="card">
                     <h3>${p.nome}</h3>
-                    <p>${p.preco}€</p>
+                    <p style="color:var(--nexus-blue); font-size:1.2rem;">${p.preco.toFixed(2)}€</p>
                     <button class="btn-buy" onclick="adicionar(${p.preco}, '${p.nome}')">ADICIONAR</button>
                 </div>
             `).join('');
         }
 
         function adicionar(preco, nome) {
-            let cart = RD_API.storage.get("rd_selecionados") || [];
-            cart.push({ nome, preco, qtd: 1 });
-            RD_API.storage.set("rd_selecionados", cart);
-            RD_API.storage.set("rd_carrinho_total", preco.toFixed(2));
-            alert("Adicionado!");
+            let carrinho = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
+            carrinho.push({ nome, preco, qtd: 1 });
+            localStorage.setItem("rd_selecionados", JSON.stringify(carrinho));
+            
+            let total = parseFloat(localStorage.getItem("rd_carrinho_total") || 0) + preco;
+            localStorage.setItem("rd_carrinho_total", total.toFixed(2));
+            
+            alert(nome + " adicionado!");
         }
+
         renderizar();
     </script>
 </body>
