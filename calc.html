@@ -1,4 +1,23 @@
+// Apenas edite estes valores quando necessário:
+const TABELA_PRECOS = {
+    P_PLACA: 12.50,
+    P_MONTANTE: 3.80,
+    P_RAIA: 3.20,
+    P_PARAFUSO_PM: 0.05,
+    P_PARAFUSO_LN: 0.04,
+    P_MASSA: 1.20,
+    P_MANTA: 4.50,
+    P_FITA: 0.15,
+    P_TRATAMENTO: 0.65
+};
 
+function calcularOrcamentoCompletoV3() {
+    const area = parseFloat(document.getElementById('areaInput').value) || 0;
+    
+    // Agora o cálculo usa o objeto TABELA_PRECOS
+    const qPla = Math.ceil(area / 2.88); 
+    const tPla = qPla * TABELA_PRECOS.P_PLACA;
+    // ... e assim por diante
 
     <!DOCTYPE html>
     <html lang="pt-pt">
