@@ -13,89 +13,75 @@
         .checkout-container { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 40px; max-width: 1200px; margin: auto; padding: 20px; }
         .box-billing { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 30px; }
         .box-billing h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
+        
+        /* Ajuste de Métodos */
         .payment-methods { display: flex; gap: 20px; margin: 20px 0; }
-        .method-btn { flex: 1; background: #0f0f0f; border: 1px solid #222; color: white; padding: 18px 15px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s ease; position: relative; }
-        .method-btn.active { border-color: var(--rd-red); background: rgba(255, 0, 0, 0.05); box-shadow: 0 0 15px rgba(255,0,0,0.1); }
-        .logos-row { display: flex; gap: 8px; justify-content: center; align-items: center; }
+        .method-btn { flex: 1; background: #0f0f0f; border: 1px solid #222; color: white; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .method-btn.active { border-color: var(--rd-red); background: rgba(255, 0, 0, 0.05); }
+        .method-btn img { height: 25px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
+        .method-btn span { font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold; }
+
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.85rem; color: #888; font-family: 'Orbitron'; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; font-size:1rem; }
-        .btn-pay-execute { width: 100%; background: #25D366; color: white; border: none; padding: 16px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; }
-        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.95rem; }
+        .form-input { width: 100%; padding: 14px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; }
+        .btn-pay-execute { width: 100%; background: #25D366; color: white; border: none; padding: 16px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         #stripe-card-element { background: #111; padding: 16px; border-radius: 6px; border: 1px solid #333; margin-top: 5px; }
+        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1c1c1c; }
     </style>
 </head>
 <body>
 
 <header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <div style="display: flex; flex-direction: column; gap: 4px;">
-            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
-            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
-                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block;"></span>
-                System Online | Secure Encrypted
-            </span>
-        </div>
-    </div>
-    <nav>
-        <a href="index.html" style="color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif;">E-Commerce</a>
-    </nav>
+    <div style="font-family: 'Orbitron'; color: #FF0000; font-size: 22px; font-weight: bold;">RD. LOGISTICS</div>
+    <nav><a href="index.html" style="color: #fff; text-decoration: none; font-family: 'Urbanist';">E-COMMERCE</a></nav>
 </header>
 
 <div class="checkout-container">
     <div class="box-billing">
         <h3><i class="fa-solid fa-receipt"></i> Resumo Consolidado</h3>
-        <div id="lista-checkout-itens" style="margin: 20px 0;"></div>
-        <div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:1.3rem; font-weight:bold; color:var(--rd-red); border-top:1px dashed #333; padding-top:15px;">
-            <span>TOTAL A PAGAR:</span>
-            <span id="total-checkout-val">0.00€</span>
+        <div id="lista-checkout-itens"></div>
+        <div style="margin-top:20px; font-family:'Orbitron'; font-size:1.3rem; color:var(--rd-red); border-top:1px dashed #333; padding-top:15px;">
+            TOTAL: <span id="total-checkout-val">0.00€</span>
         </div>
     </div>
     <div class="box-billing">
-        <h3><i class="fa-solid fa-shield-halved"></i> Gateway de Pagamento Seguro</h3>
+        <h3><i class="fa-solid fa-shield-halved"></i> Gateway Seguro</h3>
         <div class="form-group">
-            <label><i class="fa-solid fa-map-pin" style="color:var(--rd-red);"></i> MORADA DE DESPACHO E ENTREGA</label>
-            <input type="text" id="rd-morada" class="form-input" placeholder="Ex: Rua de Santa Catarina 400, Porto">
+            <label>MORADA DE ENTREGA</label>
+            <input type="text" id="rd-morada" class="form-input">
         </div>
         
         <div class="payment-methods">
             <button class="method-btn active" id="btn-mbway" onclick="selecionarMetodo('mbway')">
-                <span style="font-size: 0.75rem; letter-spacing:0.5px;">PAGAR VIA MB WAY</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/MB_WAY_logo.png" alt="MB WAY">
+                <span>MB WAY</span>
             </button>
             <button class="method-btn" id="btn-card" onclick="selecionarMetodo('card')">
-                <span style="font-size: 0.75rem; letter-spacing:0.5px;">CARTÃO CRÉDITO</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style="height:15px; margin-top:5px;">
+                <span>CARTÃO CRÉDITO</span>
             </button>
         </div>
         
-        <div id="form-mbway"><div class="form-group"><label>NÚMERO DE TELEMÓVEL</label><input type="tel" id="mbway-phone" class="form-input" placeholder="912 345 678" maxlength="9"></div></div>
+        <div id="form-mbway"><div class="form-group"><label>NÚMERO DE TELEMÓVEL</label><input type="tel" class="form-input" placeholder="912 345 678"></div></div>
         <div id="form-card" style="display: none;">
-            <div class="form-group">
-                <label>DADOS DO CARTÃO DE CRÉDITO</label>
-                <div id="stripe-card-element"></div>
-                <div id="card-errors" role="alert" style="color: var(--rd-red); font-size: 0.85rem; margin-top: 8px; font-family:'Orbitron';"></div>
-            </div>
+            <div id="stripe-card-element"></div>
+            <div id="card-errors" style="color:red; margin-top:10px; font-size:0.8rem;"></div>
         </div>
-        <button class="btn-pay-execute" id="submit-payment-btn" onclick="processarTransacao()">CONFIRMAR E LIQUIDAR TRANSAÇÃO</button>
+        <button class="btn-pay-execute" id="submit-payment-btn" onclick="processarTransacao()">CONFIRMAR E LIQUIDAR</button>
     </div>
 </div>
 
 <script>
     const stripe = Stripe("pk_live_COLOQUE_A_SUA_CHAVE_AQUI");
-    const elements = stripe.elements();
-    const card = elements.create('card', {
-        style: { base: { color: '#ffffff', fontFamily: '"Urbanist", sans-serif', fontSize: '16px' } }
-    });
-    
+    const card = stripe.elements().create('card', { style: { base: { color: '#fff', fontSize: '16px' } } });
     let metodoAtual = 'mbway';
     card.mount('#stripe-card-element');
 
     function carregarDados() {
         const total = localStorage.getItem("rd_carrinho_total") || "0.00";
         const itens = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
-        const container = document.getElementById("lista-checkout-itens");
-        container.innerHTML = itens.map(i => `<div class="order-item"><span>• ${i.qtd}x ${i.nome}</span><strong>${(i.preco * i.qtd).toFixed(2)}€</strong></div>`).join('');
+        document.getElementById("lista-checkout-itens").innerHTML = itens.map(i => `<div class="order-item"><span>${i.nome}</span><strong>${(i.preco * i.qtd).toFixed(2)}€</strong></div>`).join('');
         document.getElementById("total-checkout-val").innerText = total + "€";
-        document.getElementById("rd-morada").value = localStorage.getItem("rd_morada_cliente") || "";
     }
 
     function selecionarMetodo(m) {
@@ -108,8 +94,7 @@
 
     async function processarTransacao() {
         const morada = document.getElementById("rd-morada").value;
-        if(!morada) return alert("Preencha a morada.");
-        localStorage.setItem("rd_morada_cliente", morada);
+        if(!morada) return alert("Morada obrigatória.");
 
         if (metodoAtual === 'card') {
             const res = await fetch('/api/criar-pagamento', { 
@@ -121,12 +106,9 @@
             const result = await stripe.confirmCardPayment(clientSecret, { payment_method: { card } });
             if (result.error) return document.getElementById('card-errors').innerText = result.error.message;
         }
-        
-        alert("Transação finalizada!");
-        localStorage.setItem("rd_selecionados", "[]");
-        window.location.href = "index.html";
+        localStorage.removeItem("rd_selecionados");
+        window.location.href = "sucesso.html";
     }
-
     carregarDados();
 </script>
 </body>
