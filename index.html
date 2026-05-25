@@ -1,191 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-pt" class="notranslate" translate="no">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="google" content="notranslate">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RD Logistics | E-Commerce</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>RD Logistics | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+    <script src="js/api-manager.js"></script>
     <style>
-        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --card-bg: #0a0a0a; }
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; overflow-x: hidden; }
-        .hero { text-align: center; padding: 40px 20px; background: radial-gradient(circle, #150000 0%, #000000 100%); border-bottom: 1px solid #111; }
-        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; margin: 0; color: white; }
-        .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 30px; padding: 40px; max-width: 1400px; margin: auto; }
-        .section-title { font-family: 'Orbitron'; border-left: 4px solid var(--rd-red); padding-left: 15px; margin-bottom: 25px; font-size: 1.4rem; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .product-card { background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; position: relative; cursor: pointer; }
-        .product-card:hover { border-color: var(--rd-red); transform: translateY(-3px); }
-        .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; background: #111; margin-bottom: 15px; border: 1px solid #222; }
-        .product-card h3 { font-family: 'Orbitron'; color: white; margin: 10px 0; font-size: 1.25rem; }
-        .product-card .price { color: var(--nexus-blue); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
-        .qty-control { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: auto; }
-        .qty-input { width: 70px; padding: 10px; background: #111; border: 1px solid #333; color: white; text-align: center; border-radius: 4px; font-family: 'Orbitron'; font-size: 1rem; }
-        .btn-buy { background: #111; color: white; border: 1px solid #444; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; width: 100%; text-transform: uppercase; }
-        .btn-buy.selected { background: var(--rd-red); border-color: var(--rd-red); color: white; }
-        .sidebar { display: flex; flex-direction: column; gap: 30px; }
-        .panel-box { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 25px; }
-        .panel-box h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
-        #mapa-real-google { width: 100%; height: 240px; border-radius: 8px; border: 1px solid #ccc; margin-top: 15px; background: #fff; }
-        .btn-go-calc { width: 100%; background: var(--nexus-blue); color: black; border: none; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; text-align: center; text-decoration: none; display: block; margin-top: 15px; }
-        .btn-track { width: 100%; background: #FF0000; color: white; border: none; padding: 12px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
-        .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1c1c1c; }
-        .total-preview { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--rd-red); font-weight: bold; text-align: right; margin-top: 15px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-        .modal-container { background: #0a0a0a; border: 2px solid #222; border-top: 4px solid var(--rd-red); width: 100%; max-width: 850px; border-radius: 12px; padding: 30px; position: relative; box-shadow: 0 0 30px rgba(255,0,0,0.15); animation: zoomIn 0.25s ease-out; }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #555; font-size: 1.8rem; cursor: pointer; }
-        .modal-close:hover { color: var(--rd-red); }
-        .modal-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; margin-top: 15px; }
+        body { background: #000; color: #fff; font-family: 'Urbanist', sans-serif; margin: 0; padding-top: 120px; }
+        /* Header c/ Esferas */
+        .orbit-container { width: 80px; height: 35px; position: relative; border: 1px solid #222; }
+        .orbit { position: absolute; border-radius: 50%; animation: orbit 3s infinite linear; }
+        @keyframes orbit { from { transform: rotate(0deg) translateX(15px); } to { transform: rotate(360deg) translateX(15px); } }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 40px; }
+        .card { background: #0a0a0a; border: 1px solid #222; padding: 20px; text-align: center; }
+        .btn-buy { background: #FF0000; color: #fff; border: none; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
+    <header style="position:fixed; top:0; width:100%; background:#050505; display:flex; justify-content:space-between; padding:20px; align-items:center; border-bottom:2px solid #FF0000;">
+        <div style="font-family:'Orbitron'; font-size:20px;">RD. LOGISTICS</div>
+        <div class="orbit-container"><div class="orbit" style="width:8px; height:8px; background:#FF0000;"></div></div>
+        <nav><a href="checkout.html" style="color:#25D366; text-decoration:none;">CHECKOUT</a></nav>
+    </header>
 
-<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <div style="display: flex; flex-direction: column; gap: 4px;">
-            <a href="index.html" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
-            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
-                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block;"></span>
-                System Online | Secure Encrypted
-            </span>
-        </div>
-    </div>
-    <nav>
-        <a href="index.html" style="color: #FF0000; text-decoration: none; font-weight: bold;">E-Commerce</a>
-        <a href="calc.html" style="color: #00d2ff; text-decoration: none; margin-left: 20px;">Calculadora</a>
-        <a href="checkout.html" style="color: #25D366; text-decoration: none; margin-left: 20px;">Checkout</a>
-    </nav>
-</header>
+    <div class="grid" id="produtos-container"></div>
 
-<section class="hero">
-    <h1>REFERÊNCIA DETERMINANTE</h1>
-    <p>Selecione as mercadorias extras abaixo e avance para o fechamento da operação.</p>
-</section>
+    <script>
+        const produtos = [
+            { id: 1, nome: "Placa Pladur", preco: 12.50 },
+            { id: 2, nome: "Perfil 45mm", preco: 3.80 }
+        ];
 
-<div class="main-layout">
-    <div class="products-section">
-        <h2 class="section-title">Mercadorias em Vitrine</h2>
-        <div class="products-grid" id="grid-produtos"></div>
-    </div>
-    <div class="sidebar">
-        <div class="panel-box">
-            <h3><i class="fa-solid fa-cart-shopping"></i> Pedido de Extras</h3>
-            <div id="lista-previa-carrinho" style="color: #aaa; font-size: 0.9rem;">Nenhum item selecionado.</div>
-            <div class="total-preview" id="preco-total-previa">TOTAL: 0.00€</div>
-            <a href="checkout.html" class="btn-go-calc">AVANÇAR PARA CHECKOUT</a>
-        </div>
-        <div class="panel-box">
-            <h3><i class="fa-solid fa-map-location-dot"></i> Rastreamento de Carga</h3>
-            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido</div>
-            <div id="mapa-real-google"></div>
-            <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="modalProduto" onclick="fecharGuiaProduto(event)">
-    <div class="modal-container" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="ocultarModal()">&times;</button>
-        <div id="modal-conteudo"></div>
-    </div>
-</div>
-
-<script src="js/api-manager.js"></script>
-<script>
-    let globalMap, markerDispositivo, watchId = null;
-    const centroRD = { lat: 41.1579, lng: -8.6291 };
-
-    // Inicialização via API Manager
-    function initMap() {
-        if (typeof RD_API !== 'undefined') {
-            globalMap = RD_API.initMap("mapa-real-google", centroRD.lat, centroRD.lng);
-            const moradaSalva = RD_API.storage.get("rd_morada_cliente");
-            if(moradaSalva) document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
-        }
-    }
-
-    function alternarRastreamentoGpsReal() {
-        const btn = document.getElementById("btnGps");
-        if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId); watchId = null;
-            btn.className = "btn-track"; btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS';
-            return;
-        }
-        if (!navigator.geolocation) return alert("GPS indisponível.");
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
-        
-        watchId = navigator.geolocation.watchPosition((pos) => {
-            const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            if (!markerDispositivo) {
-                markerDispositivo = new google.maps.Marker({ position: coords, map: globalMap, title: "Carga" });
-            } else { markerDispositivo.setPosition(coords); }
-            globalMap.setCenter(coords);
-        });
-    }
-
-    const bancoInicial = [
-        { id: "p1", nome: "Placa Pladur Standard", preco: "12.50", unidade: "un", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" },
-        { id: "p2", nome: "Perfil Montante 45mm", preco: "3.80", unidade: "m", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" }
-    ];
-
-    if (!RD_API.storage.get("rd_mercadorias")) RD_API.storage.set("rd_mercadorias", bancoInicial);
-    if (!RD_API.storage.get("rd_selecionados")) RD_API.storage.set("rd_selecionados", []);
-
-    function carregarVitrine() {
-        const grid = document.getElementById('grid-produtos'); grid.innerHTML = "";
-        const produtos = RD_API.storage.get("rd_mercadorias");
-        const selecionados = RD_API.storage.get("rd_selecionados") || [];
-
-        produtos.forEach(p => {
-            const sel = selecionados.find(s => s.nome === p.nome);
-            grid.innerHTML += `
-                <div class="product-card" onclick="exibirGuiaProduto('${p.id}')">
-                    <img class="product-img" src="${p.foto}" alt="${p.nome}">
+        function renderizar() {
+            const container = document.getElementById('produtos-container');
+            container.innerHTML = produtos.map(p => `
+                <div class="card">
                     <h3>${p.nome}</h3>
-                    <div class="price">${p.preco}€ / ${p.unidade}</div>
-                    <button class="${sel ? 'btn-buy selected' : 'btn-buy'}" onclick="event.stopPropagation(); alternarSelecao('${p.nome}', ${p.preco}, '${p.id}')">
-                        ${sel ? 'Selecionado' : 'Incluir'}
-                    </button>
+                    <p>${p.preco}€</p>
+                    <button class="btn-buy" onclick="adicionar(${p.preco}, '${p.nome}')">ADICIONAR</button>
                 </div>
-            `;
-        });
-        calcularTotalPainelLateral();
-    }
+            `).join('');
+        }
 
-    function alternarSelecao(nome, preco, id) {
-        let selecionados = RD_API.storage.get("rd_selecionados") || [];
-        const index = selecionados.findIndex(s => s.nome === nome);
-        if (index > -1) selecionados.splice(index, 1);
-        else selecionados.push({ nome, preco: parseFloat(preco), qtd: 1 });
-        RD_API.storage.set("rd_selecionados", selecionados);
-        carregarVitrine();
-    }
-
-    function calcularTotalPainelLateral() {
-        const selecionados = RD_API.storage.get("rd_selecionados") || [];
-        const container = document.getElementById("lista-previa-carrinho");
-        let soma = 0;
-        container.innerHTML = selecionados.length ? "" : "Nenhum item.";
-        selecionados.forEach(s => {
-            const sub = s.preco * s.qtd; soma += sub;
-            container.innerHTML += `<div class="summary-item"><span>${s.nome}</span><strong>${sub.toFixed(2)}€</strong></div>`;
-        });
-        document.getElementById("preco-total-previa").innerText = "TOTAL: " + soma.toFixed(2) + "€";
-        RD_API.storage.set("rd_carrinho_total", soma.toFixed(2));
-    }
-
-    function fecharGuiaProduto(e) { if(e.target.classList.contains('modal-overlay')) ocultarModal(); }
-    function ocultarModal() { document.getElementById("modalProduto").style.display = "none"; }
-    
-    window.onload = carregarVitrine;
-</script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=SUA_KEY&callback=initMap"></script>
-
-<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 40px; margin-top: 80px; text-align: center; color: #555; font-family: 'Orbitron'; font-size: 0.8rem;">
-    © 2026 RD Logistics. Todos os direitos reservados. Licença nº 44102/RD
-</footer>
+        function adicionar(preco, nome) {
+            let cart = RD_API.storage.get("rd_selecionados") || [];
+            cart.push({ nome, preco, qtd: 1 });
+            RD_API.storage.set("rd_selecionados", cart);
+            RD_API.storage.set("rd_carrinho_total", preco.toFixed(2));
+            alert("Adicionado!");
+        }
+        renderizar();
+    </script>
 </body>
 </html>
