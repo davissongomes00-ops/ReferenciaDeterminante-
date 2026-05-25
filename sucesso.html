@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | Operação Confirmada</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --success-green: #25D366; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* Efeito de linhas de fundo */
+        body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(255,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,0,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; }
+
+        .success-container { position: relative; z-index: 1; background: #0a0a0a; border: 1px solid #222; border-top: 4px solid var(--success-green); padding: 50px; border-radius: 12px; text-align: center; max-width: 500px; box-shadow: 0 0 40px rgba(37, 211, 102, 0.1); animation: slideUp 0.5s ease-out; }
+        
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .icon-box { font-size: 4rem; color: var(--success-green); margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(37, 211, 102, 0.3)); }
+        
+        h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0 0 15px 0; letter-spacing: 2px; }
+        p { color: #aaa; line-height: 1.6; margin-bottom: 30px; }
+        
+        .op-details { background: #000; border: 1px solid #1c1c1c; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-size: 0.8rem; color: var(--nexus-blue); margin-bottom: 30px; }
+        
+        .btn-return { background: var(--rd-red); color: white; border: none; padding: 15px 30px; border-radius: 4px; font-family: 'Orbitron'; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; text-transform: uppercase; }
+        .btn-return:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="icon-box"><i class="fa-solid fa-circle-check"></i></div>
+        <h1>TRANSAÇÃO LIQUIDADA</h1>
+        <p>O seu manifesto de carga foi processado com sucesso. A logística de despacho foi ativada e a nossa central está a coordenar a entrega cirúrgica.</p>
+        
+        <div class="op-details">
+            STATUS: SISTEMA ONLINE<br>
+            OPERACIONAL: ATIVO<br>
+            REF: RD-LOG-<span id="rd-id"></span>
+        </div>
+
+        <a href="index.html" class="btn-return">Retornar à Base</a>
+    </div>
+
+    <script>
+        // Gera um ID de operação aleatório para visual
+        document.getElementById('rd-id').innerText = Math.floor(100000 + Math.random() * 900000);
+    </script>
+</body>
+</html>
