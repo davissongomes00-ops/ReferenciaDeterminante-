@@ -1,116 +1,391 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Merchandise</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { background: #050505; color: white; font-family: 'Urbanist', sans-serif; padding: 20px; }
-        .card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid #444; color: white; }
-        button { background: #FF0000; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #222; padding: 10px; text-align: left; }
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --card-bg: #0a0a0a; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding: 40px 20px; }
+
+        h1 { font-family: 'Orbitron'; color: var(--rd-red); text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #555; font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 40px; }
+
+        .layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; max-width: 1200px; margin: auto; }
+
+        .card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 25px; }
+        .card h3 { font-family: 'Orbitron'; color: var(--nexus-blue); margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
+
+        label { display: block; font-size: 0.8rem; color: #666; font-family: 'Orbitron'; margin-bottom: 6px; margin-top: 15px; }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 12px; background: #111; border: 1px solid #333;
+            color: white; border-radius: 6px; font-family: 'Urbanist'; font-size: 1rem;
+        }
+        textarea { min-height: 90px; resize: vertical; }
+
+        .upload-area {
+            border: 2px dashed #333; border-radius: 8px; padding: 30px;
+            text-align: center; cursor: pointer; margin-top: 15px;
+            transition: border-color 0.2s;
+        }
+        .upload-area:hover { border-color: var(--rd-red); }
+        .upload-area i { font-size: 2rem; color: #444; margin-bottom: 10px; display: block; }
+        .upload-area p { color: #555; margin: 0; font-size: 0.9rem; }
+        .upload-area input[type="file"] { display: none; }
+
+        .preview-media { width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px; margin-top: 10px; border: 1px solid #222; display: none; }
+
+        .progress-bar-wrap { background: #111; border-radius: 4px; height: 6px; margin-top: 10px; display: none; }
+        .progress-bar { height: 6px; background: var(--nexus-blue); border-radius: 4px; width: 0%; transition: width 0.3s; }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 0.95rem; margin-top: 15px; text-transform: uppercase; }
+        .btn-save { background: var(--rd-red); color: white; }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-clear { background: #111; color: #555; border: 1px solid #333; }
+        .btn-code { background: var(--nexus-blue); color: black; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { font-family: 'Orbitron'; font-size: 0.75rem; color: #555; padding: 10px; text-align: left; border-bottom: 1px solid #222; }
+        td { padding: 12px 10px; border-bottom: 1px solid #111; font-size: 0.9rem; vertical-align: middle; }
+        .thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #222; }
+        .badge-video { background: #1a1a2e; color: var(--nexus-blue); font-size: 0.7rem; font-family: 'Orbitron'; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--nexus-blue); }
+        .badge-img { background: #1a1a00; color: #ffcc00; font-size: 0.7rem; font-family: 'Orbitron'; padding: 2px 6px; border-radius: 4px; border: 1px solid #ffcc00; }
+        .btn-edit { background: #111; color: var(--nexus-blue); border: 1px solid var(--nexus-blue); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; }
+        .btn-del { background: #111; color: var(--rd-red); border: 1px solid var(--rd-red); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; margin-left: 5px; }
+
+        .code-box { background: #050505; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-top: 20px; font-family: monospace; font-size: 0.8rem; color: #00d2ff; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; display: none; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #111; border: 1px solid var(--nexus-blue); color: white; padding: 15px 20px; border-radius: 8px; font-family: 'Orbitron'; font-size: 0.85rem; display: none; z-index: 9999; }
     </style>
 </head>
 <body>
+
+<h1>RD LOGISTICS</h1>
+<p class="subtitle">PAINEL DE ADMINISTRAÇÃO — GESTÃO DE MERCADORIAS</p>
+
+<div class="layout">
+
+    <!-- FORMULÁRIO -->
     <div class="card">
-        <h3>Add/Edit Merchandise</h3>
-        <input type="hidden" id="product-index">
-        <input type="text" id="product-name" placeholder="Product Name">
-        <input type="number" id="product-price" placeholder="Price">
-        <textarea id="product-desc" placeholder="Technical Description"></textarea>
-        
-        <label>Product Image:</label>
-        <input type="file" id="upload-photo" accept="image/*" onchange="convertToBase64()">
-        <input type="hidden" id="product-photo">
-        
-        <button onclick="saveProduct()">Save Product</button>
+        <h3><i class="fa-solid fa-box"></i> Produto</h3>
+
+        <input type="hidden" id="edit-index">
+
+        <label>NOME DO PRODUTO</label>
+        <input type="text" id="p-nome" placeholder="Ex: Placa Pladur Standard">
+
+        <label>PREÇO (€)</label>
+        <input type="number" id="p-preco" placeholder="Ex: 12.50" step="0.01">
+
+        <label>UNIDADE</label>
+        <select id="p-unidade">
+            <option value="un">un — Unidade</option>
+            <option value="m">m — Metro linear</option>
+            <option value="m²">m² — Metro quadrado</option>
+            <option value="kg">kg — Quilograma</option>
+            <option value="cx">cx — Caixa</option>
+            <option value="rolo">rolo — Rolo</option>
+        </select>
+
+        <label>DESCRIÇÃO TÉCNICA</label>
+        <textarea id="p-desc" placeholder="Descrição detalhada do produto..."></textarea>
+
+        <label>FOTO OU VÍDEO DO PRODUTO</label>
+        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p>Clica para selecionar foto ou vídeo</p>
+            <p style="font-size:0.75rem; margin-top:5px; color:#444;">JPG, PNG, MP4, MOV — Cloudinary</p>
+            <input type="file" id="file-input" accept="image/*,video/*" onchange="iniciarUpload(this)">
+        </div>
+
+        <div class="progress-bar-wrap" id="progress-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Preview -->
+        <img id="preview-img" class="preview-media">
+        <video id="preview-vid" class="preview-media" autoplay loop muted playsinline></video>
+
+        <input type="hidden" id="p-media-url">
+        <input type="hidden" id="p-media-tipo">
+
+        <button class="btn btn-save" id="btn-save" onclick="guardarProduto()">
+            <i class="fa-solid fa-floppy-disk"></i> GUARDAR PRODUTO
+        </button>
+        <button class="btn btn-clear" onclick="limparFormulario()">
+            <i class="fa-solid fa-rotate-left"></i> LIMPAR
+        </button>
     </div>
 
-    <table>
-        <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
-        <tbody id="table-body"></tbody>
-    </table>
+    <!-- LISTA + CÓDIGO -->
+    <div>
+        <div class="card">
+            <h3><i class="fa-solid fa-list"></i> Produtos em Catálogo (<span id="count">0</span>)</h3>
+            <table>
+                <thead>
+                    <tr><th>MEDIA</th><th>NOME</th><th>PREÇO</th><th>TIPO</th><th>AÇÕES</th></tr>
+                </thead>
+                <tbody id="tabela-produtos"></tbody>
+            </table>
+        </div>
 
-    <script>
-        /**
-         * Converts the uploaded image to Base64 and stores it in the hidden input.
-         */
-        function convertToBase64() {
-            const file = document.getElementById('upload-photo').files[0];
-            const reader = new FileReader();
-            reader.onloadend = function() {
-                document.getElementById('product-photo').value = reader.result;
+        <div class="card" style="margin-top: 20px;">
+            <h3><i class="fa-solid fa-code"></i> Código para o index.html</h3>
+            <p style="color: #555; font-size: 0.9rem;">Gera o bloco <code style="color:var(--nexus-blue)">CATALOGO</code> pronto a colar no teu index.html.</p>
+            <button class="btn btn-code" onclick="gerarCodigo()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> GERAR CÓDIGO
+            </button>
+            <button class="btn btn-clear" style="margin-top:8px;" onclick="copiarCodigo()" id="btn-copiar" disabled>
+                <i class="fa-solid fa-copy"></i> COPIAR CÓDIGO
+            </button>
+            <div class="code-box" id="code-box"></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ============================================================
+    // CONFIGURAÇÃO CLOUDINARY
+    // ============================================================
+    const CLOUDINARY_CLOUD_NAME = "dh7qssaqy";
+    const CLOUDINARY_UPLOAD_PRESET = "rd_logistics"; // ← cria este preset no Cloudinary (ver instruções abaixo)
+    // ============================================================
+
+    let produtos = JSON.parse(localStorage.getItem("rd_admin_catalogo") || "[]");
+
+    function mostrarToast(msg, cor = var(--nexus-blue)) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.style.display = "block";
+        setTimeout(() => t.style.display = "none", 3000);
+    }
+
+    function mostrarToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.style.display = "block";
+        setTimeout(() => t.style.display = "none", 3000);
+    }
+
+    async function iniciarUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const isVideo = file.type.startsWith("video/");
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("resource_type", isVideo ? "video" : "image");
+
+        document.getElementById("progress-wrap").style.display = "block";
+        document.getElementById("btn-save").disabled = true;
+        document.getElementById("preview-img").style.display = "none";
+        document.getElementById("preview-vid").style.display = "none";
+
+        const resourceType = isVideo ? "video" : "image";
+        const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                document.getElementById("progress-bar").style.width = pct + "%";
             }
-            reader.readAsDataURL(file);
-        }
+        };
 
-        /**
-         * Saves or updates a product in localStorage.
-         */
-        function saveProduct() {
-            let products = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            let index = document.getElementById('product-index').value;
-            let product = {
-                id: "p" + Date.now(),
-                nome: document.getElementById('product-name').value,
-                preco: parseFloat(document.getElementById('product-price').value),
-                descricao: document.getElementById('product-desc').value,
-                foto: document.getElementById('product-photo').value
-            };
+        xhr.onload = () => {
+            const res = JSON.parse(xhr.responseText);
+            document.getElementById("progress-wrap").style.display = "none";
+            document.getElementById("btn-save").disabled = false;
 
-            if (isNaN(product.preco) || product.nome === "") {
-                alert('Invalid product name or price.');
-                return;
-            }
+            if (res.secure_url) {
+                document.getElementById("p-media-url").value = res.secure_url;
+                document.getElementById("p-media-tipo").value = isVideo ? "video" : "imagem";
 
-            if (index === "") {
-                products.push(product);
+                if (isVideo) {
+                    const vid = document.getElementById("preview-vid");
+                    vid.src = res.secure_url;
+                    vid.style.display = "block";
+                } else {
+                    const img = document.getElementById("preview-img");
+                    img.src = res.secure_url;
+                    img.style.display = "block";
+                }
+                mostrarToast("✅ Upload concluído!");
             } else {
-                products[index] = product;
+                mostrarToast("❌ Erro no upload. Verifica o preset no Cloudinary.");
             }
-            localStorage.setItem("rd_mercadorias", JSON.stringify(products));
-            location.reload();
+        };
+
+        xhr.onerror = () => {
+            document.getElementById("progress-wrap").style.display = "none";
+            document.getElementById("btn-save").disabled = false;
+            mostrarToast("❌ Erro de rede no upload.");
+        };
+
+        xhr.send(formData);
+    }
+
+    function guardarProduto() {
+        const nome  = document.getElementById("p-nome").value.trim();
+        const preco = parseFloat(document.getElementById("p-preco").value);
+        const unidade = document.getElementById("p-unidade").value;
+        const desc  = document.getElementById("p-desc").value.trim();
+        const url   = document.getElementById("p-media-url").value;
+        const tipo  = document.getElementById("p-media-tipo").value;
+        const idx   = document.getElementById("edit-index").value;
+
+        if (!nome || isNaN(preco) || !url) {
+            mostrarToast("⚠️ Preenche nome, preço e faz upload da media.");
+            return;
         }
 
-        /**
-         * Renders the list of products stored in localStorage.
-         */
-        function renderProductList() {
-            const products = JSON.parse(localStorage.getItem("rd_mercadorias") || "[]");
-            const tbody = document.getElementById("table-body");
-            tbody.innerHTML = ''; 
+        const produto = {
+            id: idx !== "" ? produtos[parseInt(idx)].id : "p" + Date.now(),
+            nome, preco, unidade, descricao: desc,
+            foto: tipo === "imagem" ? url : null,
+            video: tipo === "video" ? url : null,
+            tipo
+        };
 
-            if (products.length === 0) {
-                console.warn('The product list is empty.');
-            }
-
-            products.forEach((p, i) => {
-                tbody.innerHTML += `<tr>
-                    <td><img src="${p.foto}" width="50" height="50" style="object-fit:cover;"></td>
-                    <td>${p.nome}</td><td>${p.preco}€</td>
-                    <td><button onclick="editProduct(${i})">Edit</button></td>
-                </tr>`;
-            });
+        if (idx !== "") {
+            produtos[parseInt(idx)] = produto;
+            mostrarToast("✅ Produto atualizado!");
+        } else {
+            produtos.push(produto);
+            mostrarToast("✅ Produto adicionado!");
         }
 
-        /**
-         * Populates the form fields based on the product index.
-         * * @param {number} index - Index of the product to be edited.
-         */
-        function editProduct(index) {
-            const products = JSON.parse(localStorage.getItem("rd_mercadorias"));
-            let p = products[index];
-            document.getElementById('product-index').value = index;
-            document.getElementById('product-name').value = p.nome;
-            document.getElementById('product-price').value = p.preco;
-            document.getElementById('product-desc').value = p.descricao;
-            document.getElementById('product-photo').value = p.foto;
+        localStorage.setItem("rd_admin_catalogo", JSON.stringify(produtos));
+        limparFormulario();
+        renderTabela();
+    }
+
+    function renderTabela() {
+        const tbody = document.getElementById("tabela-produtos");
+        document.getElementById("count").innerText = produtos.length;
+        tbody.innerHTML = "";
+
+        if (produtos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="color:#444; text-align:center; padding:30px;">Nenhum produto adicionado.</td></tr>';
+            return;
         }
 
-        // Initial render call
-        renderProductList();
-    </script>
+        produtos.forEach((p, i) => {
+            const mediaHtml = p.tipo === "video"
+                ? `<video src="${p.video}" width="50" height="50" style="object-fit:cover; border-radius:4px; border:1px solid #222;" autoplay loop muted playsinline></video>`
+                : `<img src="${p.foto}" class="thumb">`;
+            const badge = p.tipo === "video"
+                ? `<span class="badge-video"><i class="fa-solid fa-film"></i> vídeo</span>`
+                : `<span class="badge-img"><i class="fa-solid fa-image"></i> foto</span>`;
+
+            tbody.innerHTML += `<tr>
+                <td>${mediaHtml}</td>
+                <td>${p.nome}</td>
+                <td>${p.preco.toFixed(2)}€ / ${p.unidade}</td>
+                <td>${badge}</td>
+                <td>
+                    <button class="btn-edit" onclick="editarProduto(${i})"><i class="fa-solid fa-pen"></i> Editar</button>
+                    <button class="btn-del" onclick="eliminarProduto(${i})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function editarProduto(i) {
+        const p = produtos[i];
+        document.getElementById("edit-index").value = i;
+        document.getElementById("p-nome").value = p.nome;
+        document.getElementById("p-preco").value = p.preco;
+        document.getElementById("p-unidade").value = p.unidade;
+        document.getElementById("p-desc").value = p.descricao;
+        document.getElementById("p-media-url").value = p.tipo === "video" ? p.video : p.foto;
+        document.getElementById("p-media-tipo").value = p.tipo;
+
+        if (p.tipo === "video") {
+            const vid = document.getElementById("preview-vid");
+            vid.src = p.video; vid.style.display = "block";
+            document.getElementById("preview-img").style.display = "none";
+        } else {
+            const img = document.getElementById("preview-img");
+            img.src = p.foto; img.style.display = "block";
+            document.getElementById("preview-vid").style.display = "none";
+        }
+        window.scrollTo(0, 0);
+        mostrarToast("✏️ A editar: " + p.nome);
+    }
+
+    function eliminarProduto(i) {
+        if (!confirm("Eliminar \"" + produtos[i].nome + "\"?")) return;
+        produtos.splice(i, 1);
+        localStorage.setItem("rd_admin_catalogo", JSON.stringify(produtos));
+        renderTabela();
+        mostrarToast("🗑️ Produto eliminado.");
+    }
+
+    function limparFormulario() {
+        document.getElementById("edit-index").value = "";
+        document.getElementById("p-nome").value = "";
+        document.getElementById("p-preco").value = "";
+        document.getElementById("p-unidade").value = "un";
+        document.getElementById("p-desc").value = "";
+        document.getElementById("p-media-url").value = "";
+        document.getElementById("p-media-tipo").value = "";
+        document.getElementById("preview-img").style.display = "none";
+        document.getElementById("preview-vid").style.display = "none";
+        document.getElementById("file-input").value = "";
+        document.getElementById("progress-bar").style.width = "0%";
+    }
+
+    function gerarCodigo() {
+        if (produtos.length === 0) {
+            mostrarToast("⚠️ Adiciona pelo menos um produto.");
+            return;
+        }
+
+        const linhas = produtos.map(p => {
+            const mediaLine = p.tipo === "video"
+                ? `            video: "${p.video}",\n            foto: null,`
+                : `            foto: "${p.foto}",\n            video: null,`;
+            return `        {\n            id: "${p.id}",\n            nome: "${p.nome}",\n            preco: ${p.preco},\n            unidade: "${p.unidade}",\n${mediaLine}\n            tipo: "${p.tipo}",\n            descricao: "${p.descricao.replace(/"/g, '\\"').replace(/\n/g, ' ')}"\n        }`;
+        }).join(",\n");
+
+        const codigo = `const CATALOGO = [\n${linhas}\n];`;
+
+        const box = document.getElementById("code-box");
+        box.innerText = codigo;
+        box.style.display = "block";
+        document.getElementById("btn-copiar").disabled = false;
+        mostrarToast("✅ Código gerado!");
+    }
+
+    function copiarCodigo() {
+        const texto = document.getElementById("code-box").innerText;
+        navigator.clipboard.writeText(texto).then(() => mostrarToast("📋 Código copiado!"));
+    }
+
+    renderTabela();
+</script>
+
+<!--
+=============================================================
+INSTRUÇÕES — PRESET CLOUDINARY (obrigatório, 1 vez)
+=============================================================
+1. Vai a cloudinary.com → Settings → Upload
+2. Clica "Add upload preset"
+3. Nome do preset: rd_logistics
+4. Signing Mode: Unsigned
+5. Clica Save
+=============================================================
+-->
+
 </body>
 </html>
-
