@@ -159,13 +159,6 @@
 
     let produtos = JSON.parse(localStorage.getItem("rd_admin_catalogo") || "[]");
 
-    function mostrarToast(msg, cor = var(--nexus-blue)) {
-        const t = document.getElementById("toast");
-        t.innerText = msg;
-        t.style.display = "block";
-        setTimeout(() => t.style.display = "none", 3000);
-    }
-
     function mostrarToast(msg) {
         const t = document.getElementById("toast");
         t.innerText = msg;
