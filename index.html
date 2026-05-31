@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-pt" class="notranslate" translate="no">
 <head>
@@ -22,7 +21,8 @@
         .product-card { background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; position: relative; cursor: pointer; }
         .product-card:hover { border-color: var(--rd-red); transform: translateY(-3px); }
         .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; background: #111; margin-bottom: 15px; border: 1px solid #222; }
-        .product-card h3 { font-family: 'Orbitron'; color: white; margin: 10px 0; font-size: 1.25rem; }
+        .product-vid { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; background: #111; margin-bottom: 15px; border: 1px solid #222; display: block; }
+        .product-card h3 { font-family: 'Orbitron'; color: white; margin: 10px 0; font-size: 1.1rem; }
         .product-card .price { color: var(--nexus-blue); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
         .qty-control { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: auto; }
         .qty-input { width: 70px; padding: 10px; background: #111; border: 1px solid #333; color: white; text-align: center; border-radius: 4px; font-family: 'Orbitron'; font-size: 1rem; }
@@ -43,7 +43,8 @@
         .modal-close:hover { color: var(--rd-red); }
         .modal-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; margin-top: 15px; }
         .modal-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
-        .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.8rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .modal-vid { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
+        .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.6rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
         .modal-price { font-family: 'Orbitron'; font-size: 2rem; color: var(--nexus-blue); font-weight: bold; margin: 15px 0; }
         .modal-desc-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #555; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
         .modal-desc-text { color: #aaa; font-size: 0.95rem; line-height: 1.5; margin-top: 5px; text-align: justify; }
@@ -173,9 +174,30 @@
         );
     }
 
-    // CATALOGO — fonte de verdade, nunca vai para localStorage
+    // ============================================================
+    // CATALOGO — adiciona aqui os produtos gerados pelo admin
+    // ============================================================
     const CATALOGO = [
-    
+        {
+            id: "p1",
+            nome: "Placa Pladur Standard",
+            preco: 12.50,
+            unidade: "un",
+            foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400",
+            video: null,
+            tipo: "imagem",
+            descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos. Possui excelente acabamento mecânico para pintura ou cerâmica. Placas de gesso laminado compostas por uma alma de gesso de alta densidade revestida por lâminas de cartão de elevada resistência mecânica e durabilidade estrutural."
+        },
+        {
+            id: "p2",
+            nome: "Perfil Montante 45mm",
+            preco: 3.80,
+            unidade: "m",
+            foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400",
+            video: null,
+            tipo: "imagem",
+            descricao: "Perfil metálico montante estrutural em aço galvanizado, com secção em C de 45mm. Projetado especificamente para atuar como montante vertical em estruturas de gesso cartonado (Pladur). Dispõe de perfurações estrategicamente espaçadas para a passagem limpa e segura de instalações elétricas e hidráulicas internas."
+        },
         {
             id: "p1780220851017",
             nome: "Placa de gesso hidrofugada GYPFOR AQUA BA13 2000MM",
@@ -185,31 +207,39 @@
             foto: null,
             tipo: "video",
             descricao: "placa altamente forte"
-        }
-];
-        {
-            id: "p1",
-            nome: "Placa Pladur Standard",
-            preco: 12.50,
-            unidade: "un",
-            foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400",
-            descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos. Possui excelente acabamento mecânico para pintura ou cerâmica. Placas de gesso laminado compostas por uma alma de gesso de alta densidade revestida por lâminas de cartão de elevada resistência mecânica e durabilidade estrutural."
         },
         {
-            id: "p2",
-            nome: "Perfil Montante 45mm",
-            preco: 3.80,
+            id: "p1780226124838",
+            nome: "Perfil montante 48 em aço 3 mm Pertecno",
+            preco: 2.56,
             unidade: "m",
-            foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400",
-            descricao: "Perfil metálico montante estrutural em aço galvanizado, com secção em C de 45mm. Projetado especificamente para atuar como montante vertical em estruturas de gesso cartonado (Pladur). Dispõe de perfurações estrategicamente espaçadas para a passagem limpa e segura de instalações elétricas e hidráulicas internas."
+            video: "https://res.cloudinary.com/dh7qssaqy/video/upload/v1780226101/p4cbelnz4t5yiwfmq6oq.mp4",
+            foto: null,
+            tipo: "video",
+            descricao: "Perfil galvanizado em forma de C para construir uma estrutura para divisórias ou forros de paredes em sistema de placa de gesso cartonado. Tipo de produto: Montante para divisória. Peso net: 1.596 kg. Local de uso: Interior. Espessura: 0,55 mm. Material principal: Aço."
         }
     ];
+    // ============================================================
 
     function obterSelecionados() {
         return JSON.parse(localStorage.getItem("rd_selecionados")) || [];
     }
     function guardarSelecionados(lista) {
         localStorage.setItem("rd_selecionados", JSON.stringify(lista));
+    }
+
+    function mediaCardHtml(p) {
+        if (p.tipo === "video" && p.video) {
+            return `<video class="product-vid" src="${p.video}" autoplay loop muted playsinline></video>`;
+        }
+        return `<img class="product-img" src="${p.foto}" alt="${p.nome}" loading="lazy">`;
+    }
+
+    function mediaModalHtml(p) {
+        if (p.tipo === "video" && p.video) {
+            return `<video class="modal-vid" src="${p.video}" controls autoplay loop muted playsinline></video>`;
+        }
+        return `<img src="${p.foto}" class="modal-img" alt="${p.nome}">`;
     }
 
     function carregarVitrine() {
@@ -225,7 +255,7 @@
 
             grid.innerHTML += `
                 <div class="product-card" onclick="exibirGuiaProduto('${p.id}')">
-                    <img class="product-img" src="${p.foto}" alt="${p.nome}" loading="lazy">
+                    ${mediaCardHtml(p)}
                     <h3>${p.nome}</h3>
                     <div class="price">${p.preco.toFixed(2)}€ / ${p.unidade}</div>
                     <div class="qty-control" onclick="event.stopPropagation()">
@@ -248,9 +278,7 @@
         const valorQtd = sel ? sel.qtd : 1;
 
         document.getElementById("modal-conteudo").innerHTML = `
-            <div>
-                <img src="${p.foto}" class="modal-img" alt="${p.nome}">
-            </div>
+            <div>${mediaModalHtml(p)}</div>
             <div class="modal-info">
                 <h2>${p.nome}</h2>
                 <div class="modal-desc-title">Descrição</div>
