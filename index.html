@@ -103,9 +103,16 @@
         </div>
         <div class="panel-box">
             <h3><i class="fa-solid fa-map-location-dot"></i> Localização de Carga Viva</h3>
-            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:5px;">Destino: Não definido (Preencha no Checkout)</div>
+            <div id="morada-detectada" style="font-size:0.85rem; color:#aaa; margin-bottom:8px;">Insira o código de rastreamento para localizar a sua entrega.</div>
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+                <input type="text" id="input-codigo" placeholder="Ex: RD-4821" maxlength="7"
+                    style="flex:1; padding:10px; background:#111; border:1px solid #333; color:white; border-radius:6px; font-family:'Orbitron'; font-size:0.9rem; text-transform:uppercase; letter-spacing:2px;"
+                    onkeydown="if(event.key==='Enter') verificarCodigo()">
+                <button onclick="verificarCodigo()" style="background:var(--rd-red); color:white; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; font-family:'Orbitron'; font-size:0.8rem; font-weight:bold;">OK</button>
+            </div>
+            <div id="codigo-erro" style="color:#FF0000; font-family:'Orbitron'; font-size:0.75rem; display:none; margin-bottom:6px;">⛔ Código inválido ou entrega não ativa.</div>
             <div id="mapa-real-google"></div>
-            <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga</button>
+            <button class="btn-track" id="btnGps" onclick="alternarRastreamentoGpsReal()"><i class="fa-solid fa-truck"></i> Ver Posição do Estafeta</button>
         </div>
     </div>
 </div>
@@ -122,8 +129,19 @@
     const centroRD = { lat: 41.1579, lng: -8.6291 };
 
     function inicializarMapaReal() {
-        mapa = new google.maps.Map(document.getElementById("mapa-real-google"), { zoom: 13, center: centroRD });
-        // Iniciar escuta do estafeta em tempo real
+        // Mapa sempre visível, centrado em Portugal
+        mapa = new google.maps.Map(document.getElementById("mapa-real-google"), {
+            zoom: 7,
+            center: { lat: 39.6, lng: -8.0 },
+            styles: [
+                { featureType: "all", elementType: "geometry", stylers: [{ color: "#0a0a0a" }] },
+                { featureType: "water", elementType: "geometry", stylers: [{ color: "#000510" }] },
+                { featureType: "road", elementType: "geometry", stylers: [{ color: "#222222" }] },
+                { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#2a2a2a" }] },
+                { featureType: "administrative", elementType: "labels.text.fill", stylers: [{ color: "#444444" }] },
+                { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }
+            ]
+        });
         iniciarRastreamentoEstafeta();
     }
 
@@ -139,49 +157,62 @@
         }
     }
 
-    function iniciarRastreamentoEstafeta() {
+    function verificarCodigo() {
+        const inputCodigo = document.getElementById("input-codigo").value.trim().toUpperCase();
+        document.getElementById("codigo-erro").style.display = "none";
+
         import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(({ initializeApp }) => {
-            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(({ getDatabase, ref, onValue }) => {
-                const app = initializeApp({
-                    apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc",
-                    authDomain: "rd-logistics-e5688.firebaseapp.com",
-                    databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app",
-                    projectId: "rd-logistics-e5688",
-                    storageBucket: "rd-logistics-e5688.firebasestorage.app",
-                    messagingSenderId: "1037729646118",
-                    appId: "1:1037729646118:web:339ef24a80016c21be08e7"
-                }, "client-app");
+            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(({ getDatabase, ref, get, onValue }) => {
+                let fbApp;
+                try { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }, "client-app"); }
+                catch(e) { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }); }
 
-                const db = getDatabase(app);
-                const btn = document.getElementById("btnGps");
-                const moradaDiv = document.getElementById("morada-detectada");
+                const db = getDatabase(fbApp);
 
-                onValue(ref(db, "entrega/posicao"), (snapshot) => {
-                    const data = snapshot.val();
-                    if (!data) {
-                        // Sem entrega ativa
-                        if (markerEstafeta) { markerEstafeta.setMap(null); markerEstafeta = null; }
-                        btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Sem entrega ativa';
+                // Verificar se o código corresponde
+                get(ref(db, "entrega/codigo")).then((snapshot) => {
+                    const codigoFirebase = snapshot.val();
+                    if (!codigoFirebase || codigoFirebase !== inputCodigo) {
+                        document.getElementById("codigo-erro").style.display = "block";
                         return;
                     }
-                    const coords = { lat: data.lat, lng: data.lng };
-                    if (!markerEstafeta) {
-                        markerEstafeta = new google.maps.Marker({
-                            position: coords, map: mapa, title: "Estafeta RD",
-                            icon: {
-                                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                                scaledSize: new google.maps.Size(40, 40)
-                            }
-                        });
-                    } else {
-                        markerEstafeta.setPosition(coords);
+
+                    // Código correto — mostrar mapa
+                    document.getElementById("mapa-real-google").style.display = "block";
+                    document.getElementById("btnGps").style.display = "block";
+                    document.getElementById("morada-detectada").innerHTML = '<span style="color:#25D366;">✅ Código válido — A localizar estafeta...</span>';
+
+                    if (!mapa) {
+                        mapa = new google.maps.Map(document.getElementById("mapa-real-google"), { zoom: 14, center: centroRD });
                     }
-                    mapa.setCenter(coords);
-                    btn.innerHTML = '<i class="fa-solid fa-truck" style="animation: pulse 1s infinite;"></i> Entrega em Curso — Ver Posição';
-                    moradaDiv.innerHTML = '<span style="color:#25D366;">● Estafeta em rota</span>';
+
+                    // Escutar posição em tempo real
+                    onValue(ref(db, "entrega/posicao"), (snap) => {
+                        const data = snap.val();
+                        if (!data) {
+                            document.getElementById("morada-detectada").innerHTML = '<span style="color:#aaa;">Entrega concluída ou não ativa.</span>';
+                            if (markerEstafeta) { markerEstafeta.setMap(null); markerEstafeta = null; }
+                            return;
+                        }
+                        const coords = { lat: data.lat, lng: data.lng };
+                        if (!markerEstafeta) {
+                            markerEstafeta = new google.maps.Marker({
+                                position: coords, map: mapa, title: "Estafeta RD",
+                                icon: { url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", scaledSize: new google.maps.Size(40, 40) }
+                            });
+                        } else {
+                            markerEstafeta.setPosition(coords);
+                        }
+                        mapa.setCenter(coords);
+                        document.getElementById("morada-detectada").innerHTML = '<span style="color:#25D366;">● Estafeta em rota</span>';
+                    });
                 });
             });
         });
+    }
+
+    function iniciarRastreamentoEstafeta() {
+        // Aguarda verificação de código — não inicia automaticamente
     }
 
     // ============================================================
