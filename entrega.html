@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | Estafeta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #000; color: white; font-family: 'Urbanist', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: #0a0a0a; border: 1px solid #222; border-top: 4px solid var(--rd-red); border-radius: 12px; padding: 35px; width: 100%; max-width: 400px; text-align: center; }
+        h1 { font-family: 'Orbitron'; color: var(--rd-red); font-size: 1.3rem; margin: 0 0 5px 0; }
+        .subtitle { color: #444; font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 30px; }
+        .status-box { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .status-label { font-family: 'Orbitron'; font-size: 0.75rem; color: #555; margin-bottom: 8px; }
+        .status-value { font-family: 'Orbitron'; font-size: 1rem; color: var(--nexus-blue); }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-top: 10px; }
+        .btn-start { background: #25D366; color: white; }
+        .btn-stop { background: var(--rd-red); color: white; display: none; }
+        .btn-login { background: var(--rd-red); color: white; }
+        .pulse { width: 12px; height: 12px; background: #25D366; border-radius: 50%; display: inline-block; margin-right: 8px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
+        .login-section { margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; font-size: 1rem; text-align: center; letter-spacing: 3px; margin-bottom: 10px; }
+        .hidden { display: none; }
+        .coords { font-size: 0.75rem; color: #333; margin-top: 10px; font-family: monospace; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>RD LOGISTICS</h1>
+    <p class="subtitle">PAINEL DO ESTAFETA</p>
+
+    <!-- LOGIN -->
+    <div id="login-section">
+        <div class="status-box">
+            <div class="status-label">ACESSO RESTRITO</div>
+            <input type="password" id="senha-estafeta" placeholder="••••••" onkeydown="if(event.key==='Enter') fazerLogin()">
+            <button class="btn btn-login" onclick="fazerLogin()"><i class="fa-solid fa-lock-open"></i> ENTRAR</button>
+            <div id="erro-login" style="color:var(--rd-red); font-family:'Orbitron'; font-size:0.75rem; margin-top:10px; display:none;">Senha incorreta.</div>
+        </div>
+    </div>
+
+    <!-- PAINEL ESTAFETA -->
+    <div id="painel-estafeta" class="hidden">
+        <div class="status-box">
+            <div class="status-label">ESTADO DA ENTREGA</div>
+            <div class="status-value" id="estado-txt"><i class="fa-solid fa-circle" style="color:#333;"></i> Inativo</div>
+        </div>
+        <div class="status-box">
+            <div class="status-label">ÚLTIMA POSIÇÃO ENVIADA</div>
+            <div class="coords" id="coords-txt">—</div>
+        </div>
+        <button class="btn btn-start" id="btn-start" onclick="iniciarEntrega()">
+            <i class="fa-solid fa-location-arrow"></i> INICIAR ENTREGA
+        </button>
+        <button class="btn btn-stop" id="btn-stop" onclick="pararEntrega()">
+            <i class="fa-solid fa-stop"></i> TERMINAR ENTREGA
+        </button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc",
+        authDomain: "rd-logistics-e5688.firebaseapp.com",
+        databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "rd-logistics-e5688",
+        storageBucket: "rd-logistics-e5688.firebasestorage.app",
+        messagingSenderId: "1037729646118",
+        appId: "1:1037729646118:web:339ef24a80016c21be08e7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const SENHA = "*RD2026";
+    let watchId = null;
+
+    window.fazerLogin = function() {
+        const senha = document.getElementById("senha-estafeta").value;
+        if (senha === SENHA) {
+            document.getElementById("login-section").classList.add("hidden");
+            document.getElementById("painel-estafeta").classList.remove("hidden");
+        } else {
+            document.getElementById("erro-login").style.display = "block";
+        }
+    };
+
+    window.iniciarEntrega = function() {
+        if (!navigator.geolocation) return alert("GPS indisponível neste dispositivo.");
+
+        document.getElementById("estado-txt").innerHTML = '<span class="pulse"></span> A transmitir localização...';
+        document.getElementById("btn-start").style.display = "none";
+        document.getElementById("btn-stop").style.display = "block";
+
+        // Marcar entrega como ativa
+        set(ref(db, "entrega/ativa"), true);
+
+        watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                const ts  = Date.now();
+
+                set(ref(db, "entrega/posicao"), { lat, lng, ts });
+                document.getElementById("coords-txt").innerText = lat.toFixed(6) + ", " + lng.toFixed(6);
+            },
+            (err) => {
+                alert("Erro GPS: " + err.message);
+                pararEntrega();
+            },
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+        );
+    };
+
+    window.pararEntrega = function() {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+        }
+        remove(ref(db, "entrega"));
+        document.getElementById("estado-txt").innerHTML = '<i class="fa-solid fa-circle" style="color:#333;"></i> Inativo';
+        document.getElementById("btn-start").style.display = "block";
+        document.getElementById("btn-stop").style.display = "none";
+        document.getElementById("coords-txt").innerText = "—";
+    };
+</script>
+</body>
+</html>
