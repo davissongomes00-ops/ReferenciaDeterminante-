@@ -118,7 +118,7 @@
 </div>
 
 <script>
-    let mapa, markerDispositivo, watchId = null;
+    let mapa, markerEstafeta = null;
     const centroRD = { lat: 41.1579, lng: -8.6291 };
 
     function inicializarMapaReal() {
@@ -129,6 +129,8 @@
             document.getElementById("morada-detectada").innerHTML = "Destino: <strong>" + moradaSalva + "</strong>";
             tracarRotaGeocodificada(moradaSalva);
         }
+        // Iniciar escuta do estafeta em tempo real
+        iniciarRastreamentoEstafeta();
     }
 
     function tracarRotaGeocodificada(morada) {
@@ -149,29 +151,60 @@
     }
 
     function alternarRastreamentoGpsReal() {
+        // Botão agora mostra estado do estafeta
         const btn = document.getElementById("btnGps");
-        if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId); watchId = null;
-            btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-            alert("Rastreamento encerrado.");
-            return;
+        if (markerEstafeta) {
+            const pos = markerEstafeta.getPosition();
+            mapa.setCenter(pos);
+            mapa.setZoom(16);
+        } else {
+            alert("Nenhuma entrega em curso de momento.");
         }
-        if (!navigator.geolocation) return alert("GPS indisponível.");
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GPS Ativo...';
-        watchId = navigator.geolocation.watchPosition(
-            (pos) => {
-                const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                if (!markerDispositivo) {
-                    markerDispositivo = new google.maps.Marker({ position: coords, map: mapa, title: "Carga em Rota" });
-                } else { markerDispositivo.setPosition(coords); }
-                mapa.setCenter(coords);
-            },
-            () => {
-                btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Ativar GPS da Carga';
-                watchId = null;
-            },
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-        );
+    }
+
+    function iniciarRastreamentoEstafeta() {
+        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(({ initializeApp }) => {
+            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(({ getDatabase, ref, onValue }) => {
+                const app = initializeApp({
+                    apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc",
+                    authDomain: "rd-logistics-e5688.firebaseapp.com",
+                    databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app",
+                    projectId: "rd-logistics-e5688",
+                    storageBucket: "rd-logistics-e5688.firebasestorage.app",
+                    messagingSenderId: "1037729646118",
+                    appId: "1:1037729646118:web:339ef24a80016c21be08e7"
+                }, "client-app");
+
+                const db = getDatabase(app);
+                const btn = document.getElementById("btnGps");
+                const moradaDiv = document.getElementById("morada-detectada");
+
+                onValue(ref(db, "entrega/posicao"), (snapshot) => {
+                    const data = snapshot.val();
+                    if (!data) {
+                        // Sem entrega ativa
+                        if (markerEstafeta) { markerEstafeta.setMap(null); markerEstafeta = null; }
+                        btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Sem entrega ativa';
+                        return;
+                    }
+                    const coords = { lat: data.lat, lng: data.lng };
+                    if (!markerEstafeta) {
+                        markerEstafeta = new google.maps.Marker({
+                            position: coords, map: mapa, title: "Estafeta RD",
+                            icon: {
+                                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                                scaledSize: new google.maps.Size(40, 40)
+                            }
+                        });
+                    } else {
+                        markerEstafeta.setPosition(coords);
+                    }
+                    mapa.setCenter(coords);
+                    btn.innerHTML = '<i class="fa-solid fa-truck" style="animation: pulse 1s infinite;"></i> Entrega em Curso — Ver Posição';
+                    moradaDiv.innerHTML = '<span style="color:#25D366;">● Estafeta em rota</span>';
+                });
+            });
+        });
     }
 
     // ============================================================
@@ -386,8 +419,8 @@
             <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
             <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">
                 Plataforma Logística Industrial RD<br>
-                Rua Industrial da Pedrulha<br>
-                3025-027. Coimbra Portugal<br>
+                Rua de Santa Catarina, Pavilhão 400<br>
+                4000-443 Porto, Portugal<br>
                 <span style="color: #fff; font-weight: bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span>
             </p>
         </div>
@@ -395,7 +428,7 @@
             <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <a href="https://facebook.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#FF0000'; this.style.color='#FF0000'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/rd.pladur?igsh=MXJicGMxeWdvNThtMw==" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#00d2ff'; this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://instagram.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#00d2ff'; this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
                 <a href="https://linkedin.com" target="_blank" style="width: 40px; height: 40px; background: #111; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 1.1rem; transition: 0.2s;" onmouseover="this.style.borderColor='#25D366'; this.style.color='#25D366'" onmouseout="this.style.borderColor='#222'; this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
             <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
