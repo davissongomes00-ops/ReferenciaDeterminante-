@@ -269,15 +269,7 @@ const RD_API = {
             const cfg = RD_API.config.mapa;
             RD_API.mapa._instancia = new google.maps.Map(document.getElementById(elementId), {
                 zoom: cfg.zoomInicial,
-                center: cfg.centroPortugal,
-                styles: [
-                    { featureType: "all",   elementType: "geometry",      stylers: [{ color: "#0a0a0a" }] },
-                    { featureType: "water", elementType: "geometry",      stylers: [{ color: "#000510" }] },
-                    { featureType: "road",  elementType: "geometry",      stylers: [{ color: "#222222" }] },
-                    { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#2a2a2a" }] },
-                    { featureType: "administrative", elementType: "labels.text.fill", stylers: [{ color: "#444444" }] },
-                    { featureType: "poi",   elementType: "labels",        stylers: [{ visibility: "off" }] }
-                ]
+                center: cfg.centroPortugal
             });
             return RD_API.mapa._instancia;
         },
