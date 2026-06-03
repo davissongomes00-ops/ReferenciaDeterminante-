@@ -246,8 +246,7 @@
                     // Sucesso
                     await registarPedido("cartao");
                     limparCarrinho();
-                    alert("✅ Pagamento via Cartão confirmado com sucesso!");
-                    window.location.href = "/";
+                    window.location.href = "/confirmacao";
 
                 } catch (err) {
                     btn.disabled = false;
@@ -280,8 +279,7 @@
                     await new Promise(r => setTimeout(r, 1000)); // simula latência
                     await registarPedido("mbway");
                     limparCarrinho();
-                    alert("✅ Pedido MB Way registado! Aguarda confirmação de pagamento.");
-                    window.location.href = "/";
+                    window.location.href = "/confirmacao";
                     return;
 
                 } catch (err) {
@@ -305,7 +303,11 @@
             const id = "PED-" + Date.now();
             const data = agora.toLocaleDateString("pt-PT") + " " + agora.toLocaleTimeString("pt-PT");
 
-            const pedido = { id, data, morada, itens, total, metodo, estado: "pendente" };
+            // Gerar código de rastreamento único
+            const codigoRastreamento = "RD-" + Math.floor(1000 + Math.random() * 9000);
+            const pedido = { id, data, morada, itens, total, metodo, estado: "pendente", codigoRastreamento };
+            // Guardar para a página de confirmação
+            sessionStorage.setItem("rd_ultimo_pedido", JSON.stringify(pedido));
 
             // Guardar no Firebase
             try {
