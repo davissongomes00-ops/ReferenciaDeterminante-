@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD Logistics | Acompanhar Pedido</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; --card-bg: #0a0a0a; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; }
+
+        .hero { text-align: center; padding: 40px 20px 30px; background: radial-gradient(circle, #150000 0%, #000000 100%); border-bottom: 1px solid #111; }
+        .hero h1 { font-family: 'Orbitron'; font-size: 2rem; margin: 0 0 10px; color: white; }
+        .hero p { color: #555; margin: 0; }
+
+        .search-box { max-width: 500px; margin: 40px auto; padding: 0 20px; }
+        .search-input-wrap { display: flex; gap: 10px; }
+        .search-input { flex: 1; padding: 16px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: 'Orbitron'; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 3px; text-align: center; }
+        .search-input:focus { outline: none; border-color: var(--nexus-blue); }
+        .search-btn { background: var(--rd-red); color: white; border: none; padding: 16px 24px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .search-erro { color: var(--rd-red); font-family: 'Orbitron'; font-size: 0.8rem; text-align: center; margin-top: 12px; display: none; }
+
+        .container { max-width: 800px; margin: 0 auto 60px; padding: 0 20px; display: none; }
+
+        .card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .card h3 { font-family: 'Orbitron'; margin-top: 0; font-size: 0.9rem; border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
+        .card h3.azul { color: var(--nexus-blue); }
+        .card h3.verde { color: #25D366; }
+        .card h3.vermelho { color: var(--rd-red); }
+
+        /* Timeline de estado */
+        .timeline { display: flex; justify-content: space-between; position: relative; margin: 20px 0; }
+        .timeline::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: #222; z-index: 0; }
+        .timeline-step { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; position: relative; z-index: 1; }
+        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: #111; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #333; transition: all 0.3s; }
+        .step-circle.ativo { background: #25D366; border-color: #25D366; color: white; box-shadow: 0 0 15px rgba(37,211,102,0.3); }
+        .step-circle.atual { background: var(--nexus-blue); border-color: var(--nexus-blue); color: white; box-shadow: 0 0 15px rgba(0,210,255,0.3); animation: pulseStep 1.5s infinite alternate; }
+        @keyframes pulseStep { from { box-shadow: 0 0 10px rgba(0,210,255,0.3); } to { box-shadow: 0 0 25px rgba(0,210,255,0.6); } }
+        .step-label { font-family: 'Orbitron'; font-size: 0.65rem; color: #444; text-align: center; max-width: 80px; }
+        .step-label.ativo { color: #25D366; }
+        .step-label.atual { color: var(--nexus-blue); }
+
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #111; font-size: 0.9rem; color: #aaa; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row strong { color: white; text-align: right; max-width: 60%; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #111; font-size: 0.9rem; }
+        .item-row:last-child { border-bottom: none; }
+        .total-final { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--rd-red); text-align: right; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333; }
+
+        .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #25D366; color: white; border: none; padding: 14px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 0.9rem; text-decoration: none; margin-top: 10px; }
+        .btn-voltar { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #111; color: white; border: 1px solid #333; padding: 14px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 0.9rem; text-decoration: none; margin-top: 10px; }
+
+        .estado-tag { display: inline-block; padding: 6px 16px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; font-weight: bold; margin-top: 5px; }
+        .tag-pendente { background: #2a1500; color: #ff9900; border: 1px solid #ff9900; }
+        .tag-preparacao { background: #001a2a; color: var(--nexus-blue); border: 1px solid var(--nexus-blue); }
+        .tag-entregue { background: #001a00; color: #25D366; border: 1px solid #25D366; }
+
+        .loading { text-align: center; padding: 40px; font-family: 'Orbitron'; color: #444; font-size: 0.85rem; display: none; }
+        .loading i { font-size: 2rem; margin-bottom: 15px; display: block; animation: spin 1s infinite linear; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
+                <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
+                System Online | Secure Encrypted
+            </span>
+        </div>
+    </div>
+    <style>
+        @keyframes pulseGlow { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
+        nav a:hover { color: #FF0000; }
+    </style>
+    <nav style="display:flex; gap:25px;">
+        <a href="/">E-Commerce</a>
+        <a href="/calc" style="color:#00d2ff;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
+        <a href="/pagamento" style="color:#25D366;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <h1><i class="fa-solid fa-truck" style="color:var(--rd-red);"></i> ACOMPANHAR PEDIDO</h1>
+    <p>Insere o teu código de rastreamento para ver o estado da entrega</p>
+</div>
+
+<!-- Campo de pesquisa -->
+<div class="search-box">
+    <div class="search-input-wrap">
+        <input type="text" class="search-input" id="input-codigo" placeholder="RD-0000" maxlength="7"
+            onkeydown="if(event.key==='Enter') pesquisarPedido()">
+        <button class="search-btn" onclick="pesquisarPedido()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+    <div class="search-erro" id="search-erro">⛔ Código não encontrado. Verifica e tenta novamente.</div>
+</div>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+    <i class="fa-solid fa-circle-notch"></i>
+    A procurar o teu pedido...
+</div>
+
+<!-- Resultado -->
+<div class="container" id="resultado">
+
+    <!-- Estado -->
+    <div class="card">
+        <h3 class="azul"><i class="fa-solid fa-chart-line"></i> Estado do Pedido</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+            <div>
+                <div style="font-family:'Orbitron'; color:#555; font-size:0.75rem;">PEDIDO</div>
+                <div style="font-family:'Orbitron'; color:var(--nexus-blue); font-size:1.1rem;" id="res-id">—</div>
+            </div>
+            <div id="res-estado-tag"></div>
+        </div>
+        <!-- Timeline -->
+        <div class="timeline">
+            <div class="timeline-step">
+                <div class="step-circle" id="step-1"><i class="fa-solid fa-check"></i></div>
+                <div class="step-label" id="step-1-label">Recebido</div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-circle" id="step-2"><i class="fa-solid fa-box"></i></div>
+                <div class="step-label" id="step-2-label">Em Preparação</div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-circle" id="step-3"><i class="fa-solid fa-truck"></i></div>
+                <div class="step-label" id="step-3-label">Em Entrega</div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-circle" id="step-4"><i class="fa-solid fa-house"></i></div>
+                <div class="step-label" id="step-4-label">Entregue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalhes -->
+    <div class="card">
+        <h3 class="vermelho"><i class="fa-solid fa-receipt"></i> Detalhes</h3>
+        <div class="info-row"><span>Data</span><strong id="res-data">—</strong></div>
+        <div class="info-row"><span>Pagamento</span><strong id="res-metodo">—</strong></div>
+        <div class="info-row"><span>Morada</span><strong id="res-morada">—</strong></div>
+    </div>
+
+    <!-- Materiais -->
+    <div class="card">
+        <h3 class="vermelho"><i class="fa-solid fa-boxes-stacked"></i> Materiais</h3>
+        <div id="res-itens"></div>
+        <div class="total-final" id="res-total">TOTAL: 0.00€</div>
+    </div>
+
+    <!-- Suporte -->
+    <div class="card">
+        <h3 class="verde"><i class="fa-solid fa-headset"></i> Suporte</h3>
+        <p style="color:#555; font-size:0.85rem; margin:0 0 5px;">Tens alguma dúvida sobre a tua entrega?</p>
+        <a class="btn-whatsapp" id="btn-suporte" href="#">
+            <i class="fa-brands fa-whatsapp"></i> FALAR COM SUPORTE
+        </a>
+        <a class="btn-voltar" href="/">
+            <i class="fa-solid fa-arrow-left"></i> VOLTAR À LOJA
+        </a>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc",
+        authDomain: "rd-logistics-e5688.firebaseapp.com",
+        databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "rd-logistics-e5688",
+        storageBucket: "rd-logistics-e5688.firebasestorage.app",
+        messagingSenderId: "1037729646118",
+        appId: "1:1037729646118:web:339ef24a80016c21be08e7"
+    };
+
+    const existing = getApps().find(a => a.name === "pedido-cliente");
+    const app = existing ? getApp("pedido-cliente") : initializeApp(firebaseConfig, "pedido-cliente");
+    const db = getDatabase(app);
+
+    window.pesquisarPedido = function() {
+        const codigo = document.getElementById("input-codigo").value.trim().toUpperCase();
+        document.getElementById("search-erro").style.display = "none";
+        document.getElementById("resultado").style.display = "none";
+
+        if (!codigo || codigo.length < 4) return;
+
+        document.getElementById("loading").style.display = "block";
+
+        // Procurar em todos os pedidos pelo codigoRastreamento
+        onValue(ref(db, "pedidos"), (snapshot) => {
+            document.getElementById("loading").style.display = "none";
+            const todos = snapshot.val();
+            if (!todos) { mostrarErro(); return; }
+
+            const pedido = Object.values(todos).find(p => p.codigoRastreamento === codigo);
+            if (!pedido) { mostrarErro(); return; }
+
+            mostrarPedido(pedido);
+        }, { onlyOnce: true });
+    };
+
+    function mostrarErro() {
+        document.getElementById("search-erro").style.display = "block";
+    }
+
+    function mostrarPedido(p) {
+        // Preencher dados básicos
+        document.getElementById("res-id").innerText = p.id || "—";
+        document.getElementById("res-data").innerText = p.data || "—";
+        document.getElementById("res-metodo").innerText = (p.metodo || "—").toUpperCase();
+        document.getElementById("res-morada").innerText = p.morada || "—";
+        document.getElementById("res-total").innerText = "TOTAL: " + (p.total || "0.00") + "€";
+
+        // Itens
+        const itensEl = document.getElementById("res-itens");
+        itensEl.innerHTML = "";
+        (p.itens || []).forEach(i => {
+            itensEl.innerHTML += `<div class="item-row"><span>${i.qtd}x ${i.nome}</span><strong>${(i.preco * i.qtd).toFixed(2)}€</strong></div>`;
+        });
+
+        // Estado tag
+        const estado = p.estado || "pendente";
+        const tagClass = estado === "pendente" ? "tag-pendente" : estado === "preparacao" ? "tag-preparacao" : "tag-entregue";
+        const tagLabel = estado === "pendente" ? "⏳ Pendente" : estado === "preparacao" ? "📦 Em Preparação" : "✅ Entregue";
+        document.getElementById("res-estado-tag").innerHTML = `<span class="estado-tag ${tagClass}">${tagLabel}</span>`;
+
+        // Timeline
+        atualizarTimeline(estado);
+
+        // Botão suporte
+        const msg = "Olá! Tenho uma dúvida sobre o meu pedido " + p.id + " (código: " + p.codigoRastreamento + ")";
+        document.getElementById("btn-suporte").href = "https://wa.me/351963155090?text=" + encodeURIComponent(msg);
+
+        // Mostrar resultado
+        document.getElementById("resultado").style.display = "block";
+
+        // Escutar atualizações em tempo real
+        onValue(ref(db, "pedidos/" + p.id + "/estado"), (snap) => {
+            const novoEstado = snap.val();
+            if (novoEstado) {
+                const novaTagClass = novoEstado === "pendente" ? "tag-pendente" : novoEstado === "preparacao" ? "tag-preparacao" : "tag-entregue";
+                const novaTagLabel = novoEstado === "pendente" ? "⏳ Pendente" : novoEstado === "preparacao" ? "📦 Em Preparação" : "✅ Entregue";
+                document.getElementById("res-estado-tag").innerHTML = `<span class="estado-tag ${novaTagClass}">${novaTagLabel}</span>`;
+                atualizarTimeline(novoEstado);
+            }
+        });
+    }
+
+    function atualizarTimeline(estado) {
+        const passos = ["pendente", "preparacao", "entrega", "entregue"];
+        const estadoIndex = estado === "pendente" ? 0 : estado === "preparacao" ? 1 : estado === "entregue" ? 3 : 2;
+
+        for (let i = 1; i <= 4; i++) {
+            const circle = document.getElementById("step-" + i);
+            const label  = document.getElementById("step-" + i + "-label");
+            circle.className = "step-circle";
+            label.className  = "step-label";
+
+            if (i - 1 < estadoIndex) {
+                circle.className += " ativo";
+                label.className  += " ativo";
+            } else if (i - 1 === estadoIndex) {
+                circle.className += " atual";
+                label.className  += " atual";
+            }
+        }
+    }
+
+    // Se vier código na URL (?codigo=RD-1234), preencher automaticamente
+    const params = new URLSearchParams(window.location.search);
+    const codigoUrl = params.get("codigo");
+    if (codigoUrl) {
+        document.getElementById("input-codigo").value = codigoUrl.toUpperCase();
+        window.pesquisarPedido();
+    }
+</script>
+
+<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 30px 40px; margin-top: 60px; text-align:center; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: #555;">
+    © 2026 RD Logistics. Todos os direitos reservados.
+</footer>
+
+</body>
+</html>
