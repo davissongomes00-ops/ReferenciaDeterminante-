@@ -19,8 +19,8 @@ const RD_API = {
     // ============================================================
     config: {
         whatsapp:       "351963155090",
-        whatsappCalc:   "351XXXXXXXXX",          // ← substitui pelo número real da calculadora
-        stripeKey:      "pk_live_COLOCA_AQUI",   // ← substitui pela chave pública Stripe
+        whatsappCalc:   "351963155090",          // ← substitui pelo número real da calculadora
+        stripeKey:      "pk_test_51TeYUtAszT9wxrXCOYTLyPHKZ5lhWGolCRqmNDSSWRcEq0dnWAXdtHRENwLLJXgyjHpTBHGtBG5X0KuuBpfr511M00uBrztdZl",   // ← substitui pela chave pública Stripe
         stripeEndpoint: "/api/criar-pagamento",
         mbwayEndpoint:  "/api/mbway",
         cloudinary: {
