@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-pt" class="notranslate" translate="no">
 <head>
@@ -10,12 +11,12 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfHRXouF8MuF9a59X9CcmRzXx_tovAdhY&callback=inicializarMapaReal&v=weekly" defer></script>
     <style>
         :root {
-            --rd-red: #FF0000;
-            --nexus-blue: #0099cc;
-            --bg: #f5f5f5;
+            --rd-red: #CC0000;
+            --nexus-blue: #1a1a1a;
+            --bg: #f7f7f7;
             --card-bg: #ffffff;
             --text: #1a1a1a;
-            --text-muted: #666666;
+            --text-muted: #555555;
             --border: #e0e0e0;
             --header-bg: #ffffff;
         }
@@ -23,10 +24,12 @@
         body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Urbanist', sans-serif; padding-top: 110px; overflow-x: hidden; }
 
         /* HERO */
-        .hero { text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #fff5f5 0%, #f5f5f5 100%); border-bottom: 2px solid var(--border); }
-        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 3rem; margin: 0 0 10px; color: var(--text); }
-        .hero h1 span { color: var(--rd-red); }
-        .hero p { color: var(--text-muted); font-size: 1rem; margin: 0; }
+        .hero { text-align: center; padding: 60px 20px; background: #ffffff; border-bottom: 3px solid var(--rd-red); }
+        .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 2.8rem; margin: 0 0 12px; color: #1a1a1a; letter-spacing: 3px; font-weight: 700; }
+        .hero h1 span { color: #1a1a1a; }
+        .hero .hero-sub { color: var(--rd-red); font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .hero p { color: var(--text-muted); font-size: 1rem; margin: 0; max-width: 600px; margin: 0 auto; }
+        .hero-line { width: 60px; height: 3px; background: var(--rd-red); margin: 20px auto 0; border-radius: 2px; }
 
         /* LAYOUT */
         .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 30px; padding: 40px; max-width: 1400px; margin: auto; }
@@ -39,7 +42,7 @@
         .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; background: #f0f0f0; margin-bottom: 15px; border: 1px solid var(--border); }
         .product-vid { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; background: #f0f0f0; margin-bottom: 15px; border: 1px solid var(--border); display: block; }
         .product-card h3 { font-family: 'Orbitron'; color: var(--text); margin: 10px 0; font-size: 1rem; }
-        .product-card .price { color: var(--nexus-blue); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
+        .product-card .price { color: var(--rd-red); font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px; }
 
         /* CONTROLOS */
         .qty-control { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: auto; }
@@ -51,9 +54,9 @@
         /* SIDEBAR */
         .sidebar { display: flex; flex-direction: column; gap: 25px; }
         .panel-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .panel-box h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 0.95rem; }
+        .panel-box h3 { font-family: 'Orbitron'; margin-top: 0; color: #1a1a1a; border-bottom: 2px solid var(--rd-red); padding-bottom: 10px; font-size: 0.95rem; }
         #mapa-real-google { width: 100%; height: 240px; border-radius: 8px; border: 1px solid var(--border); margin-top: 15px; }
-        .btn-go-calc { width: 100%; background: var(--nexus-blue); color: white; border: none; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; text-align: center; text-decoration: none; display: block; margin-top: 15px; font-size: 0.85rem; }
+        .btn-go-calc { width: 100%; background: var(--rd-red); color: white; border: none; padding: 15px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; text-align: center; text-decoration: none; display: block; margin-top: 15px; font-size: 0.85rem; }
         .btn-track { width: 100%; background: var(--rd-red); color: white; border: none; padding: 12px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.8rem; }
         .summary-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text-muted); }
         .summary-item strong { color: var(--text); }
@@ -69,7 +72,7 @@
         .modal-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
         .modal-vid { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
         .modal-info h2 { font-family: 'Orbitron'; margin-top: 0; font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--text); }
-        .modal-price { font-family: 'Orbitron'; font-size: 1.8rem; color: var(--nexus-blue); font-weight: bold; margin: 15px 0; }
+        .modal-price { font-family: 'Orbitron'; font-size: 1.8rem; color: var(--rd-red); font-weight: bold; margin: 15px 0; }
         .modal-desc-title { font-family: 'Orbitron'; font-size: 0.8rem; color: #999; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
         .modal-desc-text { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 5px; text-align: justify; }
         .modal-actions { margin-top: 25px; display: flex; gap: 15px; }
@@ -97,7 +100,7 @@
         </div>
         <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #f5f5f5; border-radius: 4px; border: 1px solid #e0e0e0; overflow: hidden;">
             <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #ff9999 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
-            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #0099cc 0%, #99ddff 100%); filter: drop-shadow(0 0 4px #0099cc); animation: orbitH2 4s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #333 0%, #999 100%); animation: orbitH2 4s infinite linear;"></div>
             <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #333 0%, #999 100%); filter: drop-shadow(0 0 3px #333); animation: orbitH3 2.5s infinite linear;"></div>
         </div>
     </div>
@@ -112,15 +115,17 @@
     </style>
     <nav>
         <a href="/" id="nav-home">E-Commerce</a>
-        <a href="/calc" id="nav-calc" style="color: #0099cc; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
+        <a href="/calc" id="nav-calc" style="color: #1a1a1a; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
         <a href="/pagamento" id="nav-pay" style="color: #25D366; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
         <a href="/pedido" id="nav-pedido" style="color: #ff9900; font-weight: bold;"><i class="fa-solid fa-truck"></i> Meu Pedido</a>
     </nav>
 </header>
 
 <section class="hero">
-    <h1>REFERÊNCIA <span>DETERMINANTE</span></h1>
-    <p>Selecione as mercadorias extras abaixo e avance diretamente para o fechamento do Checkout.</p>
+    <span class="hero-sub">Plataforma de Distribuição Técnica</span>
+    <h1>REFERÊNCIA DETERMINANTE</h1>
+    <p>Selecione as mercadorias em vitrine e avance diretamente para o fechamento do Checkout.</p>
+    <div class="hero-line"></div>
 </section>
 
 <div class="main-layout">
@@ -338,7 +343,7 @@
             <h4 style="color: #25D366; font-size: 1.1rem;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <a href="https://facebook.com" target="_blank" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://instagram.com" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.instagram.com/rd.pladur?utm_source=qr" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
                 <a href="https://linkedin.com" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
             <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
