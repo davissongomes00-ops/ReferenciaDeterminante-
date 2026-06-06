@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-pt" class="notranslate" translate="no">
 <head>
@@ -75,6 +76,18 @@
         .modal-desc-title { font-family: 'Orbitron'; font-size: 0.8rem; color: #999; text-transform: uppercase; margin-top: 20px; letter-spacing: 1px; }
         .modal-desc-text { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 5px; text-align: justify; }
         .modal-actions { margin-top: 25px; display: flex; gap: 15px; }
+
+        /* VARIANTES */
+        .variantes-titulo { font-family: 'Orbitron'; font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px; }
+        .variantes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .variante-card { border: 2px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s; background: #fafafa; text-align: center; }
+        .variante-card:hover { border-color: var(--rd-red); background: #fff5f5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(204,0,0,0.1); }
+        .variante-card.selecionada { border-color: var(--rd-red); background: #fff0f0; box-shadow: 0 0 0 3px rgba(204,0,0,0.1); }
+        .variante-img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; background: #f0f0f0; margin-bottom: 8px; border: 1px solid var(--border); }
+        .variante-vid { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; background: #f0f0f0; margin-bottom: 8px; border: 1px solid var(--border); display: block; }
+        .variante-nome { font-family: 'Orbitron'; font-size: 0.7rem; color: #1a1a1a; margin: 0 0 4px; line-height: 1.3; }
+        .variante-preco { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--rd-red); font-weight: bold; }
+        .variante-spec { font-size: 0.75rem; color: #999; margin-top: 2px; }
 
         /* FOOTER */
         footer { background: #1a1a1a; color: #fff; padding: 50px 40px 20px; margin-top: 80px; font-family: 'Urbanist', sans-serif; }
@@ -222,8 +235,38 @@
     function iniciarRastreamentoEstafeta() {}
 
     const CATALOGO = [
-        { id: "p1", nome: "Placa Pladur Standard", preco: 12.50, unidade: "un", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400", video: null, tipo: "imagem", descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos. Possui excelente acabamento mecânico para pintura ou cerâmica. Placas de gesso laminado compostas por uma alma de gesso de alta densidade revestida por lâminas de cartão de elevada resistência mecânica e durabilidade estrutural." },
-        { id: "p2", nome: "Perfil Montante 45mm", preco: 3.80, unidade: "m", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400", video: null, tipo: "imagem", descricao: "Perfil metálico montante estrutural em aço galvanizado, com secção em C de 45mm. Projetado especificamente para atuar como montante vertical em estruturas de gesso cartonado (Pladur). Dispõe de perfurações estrategicamente espaçadas para a passagem limpa e segura de instalações elétricas e hidráulicas internas." },
+        {
+            id: "p1",
+            nome: "Placa Pladur Standard",
+            preco: 12.50,
+            unidade: "un",
+            foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400",
+            video: null,
+            tipo: "imagem",
+            descricao: "Ideal para a construção de paredes divisórias estruturais, paredes de vedação e tetos falsos em ambientes internos.",
+            variantes: [
+                { nome: "BA13 Standard 2MT", preco: 12.50, unidade: "un", spec: "12,5mm | 2,4m²", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" },
+                { nome: "BA13 Standard 2,5MT", preco: 14.90, unidade: "un", spec: "12,5mm | 3m²", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" },
+                { nome: "BA13 Hidro 2MT", preco: 15.80, unidade: "un", spec: "Hidrófuga | 2,4m²", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" },
+                { nome: "BA13 Fogo 2MT", preco: 16.50, unidade: "un", spec: "Resistente ao fogo | 2,4m²", foto: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400" }
+            ]
+        },
+        {
+            id: "p2",
+            nome: "Perfil Montante",
+            preco: 2.29,
+            unidade: "m",
+            foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400",
+            video: null,
+            tipo: "imagem",
+            descricao: "Perfil metálico montante estrutural em aço galvanizado. Projetado para atuar como montante vertical em estruturas de gesso cartonado.",
+            variantes: [
+                { nome: "Perfil Teto T47 3m", preco: 2.29, unidade: "un", spec: "47mm | Aço 3mm", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" },
+                { nome: "Perfil Montante 48mm", preco: 2.59, unidade: "un", spec: "48mm | Aço 3mm", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" },
+                { nome: "Perfil Montante 70mm", preco: 3.20, unidade: "un", spec: "70mm | Aço 3mm", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" },
+                { nome: "Perfil Montante 90mm", preco: 3.80, unidade: "un", spec: "90mm | Aço 3mm", foto: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400" }
+            ]
+        },
         { id: "p1780220851017", nome: "Placa de gesso hidrofugada GYPFOR AQUA BA13 2000MM", preco: 12.5, unidade: "un", video: "https://res.cloudinary.com/dh7qssaqy/video/upload/v1780220814/zbr5k8defybejpd4zpdz.mp4", foto: null, tipo: "video", descricao: "Placa altamente forte. Ideal para zonas húmidas e ambientes que requerem maior resistência à humidade." },
         { id: "p1780226124838", nome: "Perfil montante 48 em aço 3mm Pertecno", preco: 2.56, unidade: "un", video: "https://res.cloudinary.com/dh7qssaqy/video/upload/v1780226101/p4cbelnz4t5yiwfmq6oq.mp4", foto: null, tipo: "video", descricao: "Perfil galvanizado em forma de C para construir uma estrutura para divisórias ou forros de paredes em sistema de placa de gesso cartonado. Tipo de produto: Montante para divisória. Peso net: 1.596 kg. Local de uso: Interior. Espessura: 0,55 mm. Material principal: Aço." },
         { id: "p1780227738489", nome: "Isolamento de lã mineral Pack LA Volcalis Conf 50mm 12.96m²", preco: 2.05, unidade: "m²", video: "https://res.cloudinary.com/dh7qssaqy/video/upload/v1780227554/cmjx14o4bkswmoiuz3eh.mp4", foto: null, tipo: "video", descricao: "VOLCALIS COMFORT, lã mineral em painel, é um excelente isolamento térmico e acústico para aplicação em todo o tipo de edifícios. Resistente ao fogo, não é combustível nem conduz o calor. Produto 100% reciclável. Medidas: 600 x 1350 mm. Espessura de 50mm. Pack de 12.96 m²." },
@@ -265,31 +308,76 @@
         calcularTotalPainelLateral();
     }
 
+    // Produto selecionado no modal (pode ser variante)
+    let modalProdutoAtual = null;
+
     function exibirGuiaProduto(id) {
         const p = CATALOGO.find(item => item.id === id);
         if (!p) return;
+        modalProdutoAtual = p;
+
         const selecionados = obterSelecionados();
         const sel = selecionados.find(s => s.id === id);
         const classBtn = sel ? "btn-buy selected" : "btn-buy";
         const textoBtn = sel ? "✓ Selecionado" : "Adicionar ao carrinho";
         const valorQtd = sel ? sel.qtd : 1;
+
+        // Gerar HTML das variantes se existirem
+        let variantesHtml = "";
+        if (p.variantes && p.variantes.length > 0) {
+            variantesHtml = `<div class="variantes-titulo"><i class="fa-solid fa-layer-group"></i> Escolha a Variante</div>
+            <div class="variantes-grid">`;
+            p.variantes.forEach((v, i) => {
+                const mediaV = v.video
+                    ? `<video class="variante-vid" src="${v.video}" autoplay loop muted playsinline></video>`
+                    : `<img class="variante-img" src="${v.foto || 'https://via.placeholder.com/200x100?text=Foto'}" alt="${v.nome}">`;
+                variantesHtml += `
+                <div class="variante-card" id="variante-${i}" onclick="selecionarVariante('${id}', ${i})">
+                    ${mediaV}
+                    <div class="variante-nome">${v.nome}</div>
+                    <div class="variante-preco">${v.preco.toFixed(2)}€ / ${v.unidade || p.unidade}</div>
+                    <div class="variante-spec">${v.spec || ''}</div>
+                </div>`;
+            });
+            variantesHtml += `</div>`;
+        }
+
         document.getElementById("modal-conteudo").innerHTML = `
             <div>${mediaModalHtml(p)}</div>
             <div class="modal-info">
                 <h2>${p.nome}</h2>
                 <div class="modal-desc-title">Descrição Técnica</div>
                 <div class="modal-desc-text">${p.descricao || 'Sem descrição técnica adicional.'}</div>
-                <div class="modal-price">${p.preco.toFixed(2)}€ <span style="font-size:1rem; color:#999;">/ ${p.unidade}</span></div>
-                <div style="display:flex; align-items:center; gap:15px; margin-top:20px;">
+                ${variantesHtml}
+                <div class="modal-price" id="modal-preco-display">${p.preco.toFixed(2)}€ <span style="font-size:1rem; color:#999;">/ ${p.unidade}</span></div>
+                <div style="display:flex; align-items:center; gap:15px; margin-top:15px;">
                     <span style="font-family:'Orbitron'; font-size:0.85rem; color:#999;">QUANTIDADE:</span>
                     <input type="number" id="modal-qty-${p.id}" value="${valorQtd}" min="1" class="qty-input" style="margin:0;" onchange="sincronizarQtdModal('${p.id}', this.value)">
                 </div>
                 <div class="modal-actions">
-                    <button class="${classBtn}" style="flex:1; padding:15px;" onclick="alternarSelecaoModal('${p.id}', 'modal-qty-${p.id}')">${textoBtn}</button>
+                    <button class="${classBtn}" style="flex:1; padding:15px;" id="modal-btn-add" onclick="alternarSelecaoModal('${p.id}', 'modal-qty-${p.id}')">${textoBtn}</button>
                     <a href="/pagamento" class="btn-go-calc" style="margin:0; flex:1; display:flex; align-items:center; justify-content:center;">COMPRAR AGORA</a>
                 </div>
             </div>`;
         document.getElementById("modalProduto").style.display = "flex";
+    }
+
+    function selecionarVariante(produtoId, varianteIndex) {
+        const p = CATALOGO.find(x => x.id === produtoId);
+        if (!p || !p.variantes) return;
+        const v = p.variantes[varianteIndex];
+
+        // Destacar variante selecionada
+        document.querySelectorAll('.variante-card').forEach(c => c.classList.remove('selecionada'));
+        document.getElementById('variante-' + varianteIndex).classList.add('selecionada');
+
+        // Atualizar preço no modal
+        document.getElementById('modal-preco-display').innerHTML =
+            v.preco.toFixed(2) + '€ <span style="font-size:1rem; color:#999;">/ ' + (v.unidade || p.unidade) + '</span>';
+
+        // Guardar variante selecionada temporariamente
+        modalProdutoAtual._varianteSelecionada = v;
+        modalProdutoAtual._varianteIndex = varianteIndex;
     }
 
     function ocultarModal() { document.getElementById("modalProduto").style.display = "none"; }
