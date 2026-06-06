@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-pt">
 <head>
@@ -9,365 +8,248 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        :root { --rd-red: #FF0000; --nexus-blue: #00d2ff; --dark-bg: #000000; }
-        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Urbanist', sans-serif; padding-top: 110px; }
-        .checkout-container { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 40px; max-width: 1200px; margin: auto; padding: 20px; }
-        .box-billing { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 30px; }
-        .box-billing h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--nexus-blue); border-bottom: 1px solid #1c1c1c; padding-bottom: 10px; }
-        .payment-methods { display: flex; gap: 20px; margin: 20px 0; }
-        .method-btn { flex: 1; background: #0f0f0f; border: 1px solid #222; color: white; padding: 18px 15px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s ease; }
-        .method-btn.active { border-color: var(--rd-red); background: rgba(255,0,0,0.05); box-shadow: 0 0 15px rgba(255,0,0,0.1); }
+        :root { --rd-red: #CC0000; --bg: #f7f7f7; --card-bg: #ffffff; --text: #1a1a1a; --text-muted: #555; --border: #e0e0e0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Urbanist', sans-serif; padding-top: 110px; }
+        .checkout-container { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 40px; max-width: 1200px; margin: auto; padding: 30px 20px; }
+        .box-billing { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .box-billing h3 { font-family: 'Orbitron'; margin-top: 0; color: var(--text); border-bottom: 2px solid var(--rd-red); padding-bottom: 10px; font-size: 0.95rem; }
+        .payment-methods { display: flex; gap: 15px; margin: 20px 0; }
+        .method-btn { flex: 1; background: #f5f5f5; border: 2px solid var(--border); color: var(--text); padding: 18px 15px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; font-size: 0.75rem; }
+        .method-btn.active { border-color: var(--rd-red); background: #fff5f5; box-shadow: 0 0 0 3px rgba(204,0,0,0.08); }
         .logos-row { display: flex; gap: 8px; justify-content: center; align-items: center; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; color: #888; font-family: 'Orbitron'; margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 14px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
-        .btn-pay-execute { width: 100%; background: #25D366; color: white; border: none; padding: 16px; border-radius: 6px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; margin-top: 10px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #888; font-family: 'Orbitron'; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .form-input { width: 100%; padding: 14px; background: #f9f9f9; border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 1rem; }
+        .form-input:focus { outline: none; border-color: var(--rd-red); }
+        .btn-pay-execute { width: 100%; background: var(--rd-red); color: white; border: none; padding: 18px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-top: 15px; letter-spacing: 1px; transition: 0.2s; }
+        .btn-pay-execute:hover { background: #aa0000; }
         .btn-pay-execute:disabled { opacity: 0.6; cursor: not-allowed; }
-        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.95rem; }
-        #stripe-card-element { background: #111; padding: 16px; border-radius: 6px; border: 1px solid #333; margin-top: 5px; }
-        .alert-vazio { color: #555; font-size: 0.9rem; padding: 20px 0; text-align: center; font-family: 'Orbitron'; }
+        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; color: var(--text-muted); }
+        .order-item strong { color: var(--text); }
+        #stripe-card-element { background: #f9f9f9; padding: 16px; border-radius: 6px; border: 1px solid var(--border); margin-top: 5px; }
+        .alert-vazio { color: #aaa; font-size: 0.9rem; padding: 20px 0; text-align: center; font-family: 'Orbitron'; }
+        .total-line { display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:1.2rem; font-weight:bold; color:var(--rd-red); border-top:2px solid var(--rd-red); padding-top:15px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF0000; background: #050505; position: fixed; top: 0; width: 100%; z-index: 1000;">
+<header style="padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #CC0000; background: #ffffff; position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
     <div style="display: flex; align-items: center; gap: 20px;">
         <div style="display: flex; flex-direction: column; gap: 4px;">
-            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
+            <a href="/" style="font-family: 'Orbitron', sans-serif; color: #CC0000; font-size: 22px; font-weight: bold; text-decoration: none; letter-spacing: 1px;">RD. LOGISTICS</a>
             <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #25D366; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; opacity: 0.85;">
                 <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulseGlow 1.5s infinite alternate;"></span>
                 System Online | Secure Encrypted
             </span>
         </div>
-        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 4px; border: 1px solid #222; overflow: hidden;">
-            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #FF0000 0%, #300000 100%); filter: drop-shadow(0 0 4px #FF0000); animation: orbitH1 3s infinite linear;"></div>
-            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #00d2ff 0%, #002d3a 100%); filter: drop-shadow(0 0 4px #00d2ff); animation: orbitH2 4s infinite linear;"></div>
-            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #fff 0%, #444 100%); filter: drop-shadow(0 0 3px #fff); animation: orbitH3 2.5s infinite linear;"></div>
+        <div style="position: relative; width: 80px; height: 35px; display: flex; justify-content: center; align-items: center; background: #f5f5f5; border-radius: 4px; border: 1px solid #e0e0e0; overflow: hidden;">
+            <div style="position: absolute; border-radius: 50%; width: 8px; height: 8px; background: radial-gradient(circle, #CC0000 0%, #ff9999 100%); filter: drop-shadow(0 0 4px #CC0000); animation: orbitH1 3s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 6px; height: 6px; background: radial-gradient(circle, #333 0%, #999 100%); animation: orbitH2 4s infinite linear;"></div>
+            <div style="position: absolute; border-radius: 50%; width: 5px; height: 5px; background: radial-gradient(circle, #666 0%, #ccc 100%); animation: orbitH3 2.5s infinite linear;"></div>
         </div>
     </div>
     <style>
         @keyframes orbitH1 { 0% { transform: rotate(0deg) translateX(15px); } 100% { transform: rotate(360deg) translateX(15px); } }
         @keyframes orbitH2 { 0% { transform: rotate(360deg) translateX(22px); } 100% { transform: rotate(0deg) translateX(22px); } }
         @keyframes orbitH3 { 0% { transform: rotate(120deg) translateX(10px); } 100% { transform: rotate(480deg) translateX(10px); } }
-        @keyframes pulseGlow { 0% { opacity: 0.4; filter: drop-shadow(0 0 1px #25D366); } 100% { opacity: 1; filter: drop-shadow(0 0 5px #25D366); } }
+        @keyframes pulseGlow { 0% { opacity: 0.4; } 100% { opacity: 1; } }
         nav { display: flex; gap: 25px; align-items: center; }
-        nav a { color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.95rem; font-family: 'Urbanist', sans-serif; }
-        nav a:hover, nav a.active { color: #FF0000; }
+        nav a { color: #1a1a1a; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; font-family: 'Urbanist', sans-serif; }
+        nav a:hover, nav a.active { color: #CC0000; }
     </style>
     <nav>
         <a href="/" id="nav-home">E-Commerce</a>
-        <a href="/calc" id="nav-calc" style="color: #00d2ff; font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
-        <a href="/pagamento" id="nav-pay"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+        <a href="/calc" id="nav-calc" style="font-weight: bold;"><i class="fa-solid fa-calculator"></i> Calculadora</a>
+        <a href="/pagamento" id="nav-pay" style="color: #CC0000; font-weight: bold;"><i class="fa-solid fa-credit-card"></i> Checkout</a>
         <a href="/pedido" id="nav-pedido" style="color: #ff9900; font-weight: bold;"><i class="fa-solid fa-truck"></i> Meu Pedido</a>
     </nav>
 </header>
 
-    <div class="checkout-container">
-        <!-- COLUNA ESQUERDA: Resumo do pedido -->
-        <div class="box-billing">
-            <h3><i class="fa-solid fa-receipt"></i> Resumo Consolidado</h3>
-            <div id="lista-checkout-itens" style="margin: 20px 0;"></div>
-            <div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:1.3rem; font-weight:bold; color:var(--rd-red); border-top:1px dashed #333; padding-top:15px;">
-                <span>TOTAL A PAGAR:</span>
-                <span id="total-checkout-val">0.00€</span>
-            </div>
-        </div>
-
-        <!-- COLUNA DIREITA: Gateway de pagamento -->
-        <div class="box-billing">
-            <h3><i class="fa-solid fa-shield-halved"></i> Gateway de Pagamento Seguro</h3>
-
-            <!-- Morada -->
-            <div class="form-group">
-                <label><i class="fa-solid fa-map-pin" style="color:var(--rd-red);"></i> MORADA DE DESPACHO E ENTREGA</label>
-                <input type="text" id="rd-morada" class="form-input" placeholder="Ex: Rua de Santa Catarina 400, Porto" oninput="salvarMorada(this.value)">
-            </div>
-
-            <!-- Seleção de método -->
-            <div class="payment-methods">
-                <button class="method-btn active" id="btn-mbway" onclick="selecionarMetodo('mbway')">
-                    <svg width="45" height="25" viewBox="0 0 200 100">
-                        <rect width="200" height="100" rx="15" fill="#000" stroke="#222" stroke-width="4"/>
-                        <text x="50%" y="65%" font-family="'Orbitron', sans-serif" font-size="32" font-weight="bold" fill="#25D366" text-anchor="middle">MB WAY</text>
-                    </svg>
-                    <span style="font-size: 0.75rem; letter-spacing:0.5px;">PAGAR VIA MB WAY</span>
-                </button>
-                <button class="method-btn" id="btn-card" onclick="selecionarMetodo('card')">
-                    <div class="logos-row">
-                        <svg width="30" height="20" viewBox="0 0 30 20"><rect width="30" height="20" rx="3" fill="#002266"/><text x="50%" y="70%" font-family="sans-serif" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle" font-style="italic">VISA</text></svg>
-                        <svg width="30" height="20" viewBox="0 0 30 20"><rect width="30" height="20" rx="3" fill="#222"/><circle cx="11" cy="10" r="7" fill="#ff5f00" opacity="0.85"/><circle cx="19" cy="10" r="7" fill="#f4c430" opacity="0.85"/></svg>
-                    </div>
-                    <span style="font-size: 0.75rem; letter-spacing:0.5px;">CARTÃO CRÉDITO</span>
-                </button>
-            </div>
-
-            <!-- Formulário MB Way -->
-            <div id="form-mbway">
-                <div class="form-group">
-                    <label>NÚMERO DE TELEMÓVEL</label>
-                    <input type="tel" id="mbway-phone" class="form-input" placeholder="912 345 678" maxlength="9">
-                </div>
-            </div>
-
-            <!-- Formulário Stripe (Cartão) -->
-            <div id="form-card" style="display: none;">
-                <div class="form-group">
-                    <label>DADOS DO CARTÃO (SISTEMA ENCRIPTADO STRIPE)</label>
-                    <div id="stripe-card-element"></div>
-                    <div id="card-errors" role="alert" style="color: var(--rd-red); font-size: 0.85rem; margin-top: 8px; font-family:'Orbitron';"></div>
-                </div>
-            </div>
-
-            <button class="btn-pay-execute" id="submit-payment-btn" onclick="processarTransacao()">
-                CONFIRMAR E LIQUIDAR TRANSAÇÃO
-            </button>
+<div class="checkout-container">
+    <div class="box-billing">
+        <h3><i class="fa-solid fa-receipt"></i> Resumo Consolidado</h3>
+        <div id="lista-checkout-itens" style="margin: 20px 0;"></div>
+        <div class="total-line">
+            <span>TOTAL A PAGAR:</span>
+            <span id="total-checkout-val">0.00€</span>
         </div>
     </div>
 
-    <script>
-        // ============================================================
-        // ⚙️  CONFIGURAÇÃO — injeta as tuas chaves aqui
-        // ============================================================
+    <div class="box-billing">
+        <h3><i class="fa-solid fa-shield-halved"></i> Gateway de Pagamento Seguro</h3>
 
-        // 1. STRIPE — Chave pública (começa com pk_live_ ou pk_test_)
-        const STRIPE_PUBLIC_KEY = "pk_live_COLOCA_AQUI_A_TUA_CHAVE_PUBLICA";
+        <div class="form-group">
+            <label><i class="fa-solid fa-map-pin" style="color:var(--rd-red);"></i> MORADA DE DESPACHO E ENTREGA</label>
+            <input type="text" id="rd-morada" class="form-input" placeholder="Ex: Rua de Santa Catarina 400, Porto" oninput="salvarMorada(this.value)">
+        </div>
 
-        // 2. STRIPE — Endpoint da tua Vercel Function
-        const STRIPE_ENDPOINT = "/api/criar-pagamento";
+        <div class="payment-methods">
+            <button class="method-btn active" id="btn-mbway" onclick="selecionarMetodo('mbway')">
+                <svg width="45" height="25" viewBox="0 0 200 100">
+                    <rect width="200" height="100" rx="15" fill="#1a1a1a" stroke="#333" stroke-width="4"/>
+                    <text x="50%" y="65%" font-family="'Orbitron', sans-serif" font-size="32" font-weight="bold" fill="#25D366" text-anchor="middle">MB WAY</text>
+                </svg>
+                <span>PAGAR VIA MB WAY</span>
+            </button>
+            <button class="method-btn" id="btn-card" onclick="selecionarMetodo('card')">
+                <div class="logos-row">
+                    <svg width="30" height="20" viewBox="0 0 30 20"><rect width="30" height="20" rx="3" fill="#002266"/><text x="50%" y="70%" font-family="sans-serif" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle" font-style="italic">VISA</text></svg>
+                    <svg width="30" height="20" viewBox="0 0 30 20"><rect width="30" height="20" rx="3" fill="#222"/><circle cx="11" cy="10" r="7" fill="#ff5f00" opacity="0.85"/><circle cx="19" cy="10" r="7" fill="#f4c430" opacity="0.85"/></svg>
+                </div>
+                <span>CARTÃO CRÉDITO</span>
+            </button>
+        </div>
 
-        // 3. MB WAY — Endpoint da tua Vercel Function (ex: EasyPay / IFTHENPAY)
-        //    Quando configurares, substitui o bloco mbway em processarTransacao()
-        const MBWAY_ENDPOINT = "/api/mbway"; // ← ainda não implementado
+        <div id="form-mbway">
+            <div class="form-group">
+                <label>NÚMERO DE TELEMÓVEL</label>
+                <input type="tel" id="mbway-phone" class="form-input" placeholder="912 345 678" maxlength="9">
+            </div>
+        </div>
 
-        // ============================================================
+        <div id="form-card" style="display: none;">
+            <div class="form-group">
+                <label>DADOS DO CARTÃO (SISTEMA ENCRIPTADO STRIPE)</label>
+                <div id="stripe-card-element"></div>
+                <div id="card-errors" role="alert" style="color: var(--rd-red); font-size: 0.85rem; margin-top: 8px; font-family:'Orbitron';"></div>
+            </div>
+        </div>
 
-        document.getElementById('nav-pay').className = 'active';
-        document.getElementById('nav-pay').style.color = '#25D366';
-        document.getElementById('nav-pay').style.fontWeight = 'bold';
+        <button class="btn-pay-execute" id="submit-payment-btn" onclick="processarTransacao()">
+            <i class="fa-solid fa-lock"></i> CONFIRMAR E LIQUIDAR TRANSAÇÃO
+        </button>
+    </div>
+</div>
 
-        let metodoAtual = 'mbway';
-        let stripeInstance = null;
-        let stripeCardInput = null;
+<script>
+    const STRIPE_PUBLIC_KEY = "pk_test_51TeYUtAszT9wxrXCOYTLyPHKZ5lhWGolCRqmNDSSWRcEq0dnWAXdtHRENwLLJXgyjHpTBHGtBG5X0KuuBpfr511M00uBrztdZl";
+    const STRIPE_ENDPOINT = "/api/criar-pagamento";
+    const MBWAY_ENDPOINT = "/api/mbway";
 
-        // Inicializar Stripe
-        if (typeof Stripe !== 'undefined' && STRIPE_PUBLIC_KEY !== "pk_live_COLOCA_AQUI_A_TUA_CHAVE_PUBLICA") {
-            stripeInstance = Stripe(STRIPE_PUBLIC_KEY);
-            const elements = stripeInstance.elements();
-            stripeCardInput = elements.create('card', {
-                style: {
-                    base: {
-                        color: '#ffffff',
-                        fontFamily: '"Urbanist", sans-serif',
-                        fontSmoothing: 'antialiased',
-                        fontSize: '16px',
-                        '::placeholder': { color: '#555555' }
-                    },
-                    invalid: { color: '#FF0000', iconColor: '#FF0000' }
-                }
+    document.getElementById('nav-pay').className = 'active';
+
+    let metodoAtual = 'mbway';
+    let stripeInstance = null;
+    let stripeCardInput = null;
+
+    if (typeof Stripe !== 'undefined' && STRIPE_PUBLIC_KEY.startsWith("pk_")) {
+        stripeInstance = Stripe(STRIPE_PUBLIC_KEY);
+        const elements = stripeInstance.elements();
+        stripeCardInput = elements.create('card', {
+            style: {
+                base: { color: '#1a1a1a', fontFamily: '"Urbanist", sans-serif', fontSize: '16px', '::placeholder': { color: '#aaa' } },
+                invalid: { color: '#CC0000' }
+            }
+        });
+    }
+
+    function carregarDadosCheckout() {
+        const total = localStorage.getItem("rd_carrinho_total") || "0.00";
+        const itens = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
+        const container = document.getElementById("lista-checkout-itens");
+        const moradaSalva = localStorage.getItem("rd_morada_cliente");
+        if (moradaSalva) document.getElementById("rd-morada").value = moradaSalva;
+        if (itens.length === 0) {
+            container.innerHTML = "<p class='alert-vazio'><i class='fa-solid fa-box-open'></i><br>Manifesto de vitrine vazio.</p>";
+        } else {
+            container.innerHTML = "";
+            itens.forEach(i => {
+                container.innerHTML += `<div class="order-item"><span>• ${i.qtd}x ${i.nome}</span><strong>${(i.preco * i.qtd).toFixed(2)}€</strong></div>`;
             });
         }
+        document.getElementById("total-checkout-val").innerText = total + "€";
+    }
 
-        function carregarDadosCheckout() {
-            const total = localStorage.getItem("rd_carrinho_total") || "0.00";
-            const itens = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
-            const container = document.getElementById("lista-checkout-itens");
-            const moradaSalva = localStorage.getItem("rd_morada_cliente");
+    function salvarMorada(valor) { localStorage.setItem("rd_morada_cliente", valor); }
 
-            if (moradaSalva) document.getElementById("rd-morada").value = moradaSalva;
+    function selecionarMetodo(metodo) {
+        metodoAtual = metodo;
+        document.getElementById('btn-mbway').className = 'method-btn' + (metodo === 'mbway' ? ' active' : '');
+        document.getElementById('btn-card').className  = 'method-btn' + (metodo === 'card'  ? ' active' : '');
+        document.getElementById('form-mbway').style.display = metodo === 'mbway' ? 'block' : 'none';
+        document.getElementById('form-card').style.display  = metodo === 'card'  ? 'block' : 'none';
+        if (metodo === 'card' && stripeCardInput) stripeCardInput.mount('#stripe-card-element');
+    }
 
-            if (itens.length === 0) {
-                container.innerHTML = "<p class='alert-vazio'><i class='fa-solid fa-box-open'></i><br>Manifesto de vitrine vazio.</p>";
-            } else {
-                container.innerHTML = "";
-                itens.forEach(i => {
-                    container.innerHTML += `
-                        <div class="order-item">
-                            <span>• ${i.qtd}x ${i.nome}</span>
-                            <strong>${(i.preco * i.qtd).toFixed(2)}€</strong>
-                        </div>`;
-                });
-            }
-            document.getElementById("total-checkout-val").innerText = total + "€";
-        }
+    async function processarTransacao() {
+        const morada = document.getElementById("rd-morada").value.trim();
+        if (!morada) return alert("Por favor, preencha a morada de entrega.");
+        const total = localStorage.getItem("rd_carrinho_total") || "0.00";
+        const btn = document.getElementById("submit-payment-btn");
 
-        function salvarMorada(valor) {
-            localStorage.setItem("rd_morada_cliente", valor);
-        }
-
-        function selecionarMetodo(metodo) {
-            metodoAtual = metodo;
-            document.getElementById('btn-mbway').className = 'method-btn' + (metodo === 'mbway' ? ' active' : '');
-            document.getElementById('btn-card').className  = 'method-btn' + (metodo === 'card'  ? ' active' : '');
-            document.getElementById('form-mbway').style.display = metodo === 'mbway' ? 'block' : 'none';
-            document.getElementById('form-card').style.display  = metodo === 'card'  ? 'block' : 'none';
-            if (metodo === 'card' && stripeCardInput) {
-                stripeCardInput.mount('#stripe-card-element');
-            }
-        }
-
-        async function processarTransacao() {
-            const morada = document.getElementById("rd-morada").value.trim();
-            if (!morada) return alert("Por favor, preencha a morada de entrega.");
-
-            const total = localStorage.getItem("rd_carrinho_total") || "0.00";
-            const btn   = document.getElementById("submit-payment-btn");
-
-            // ----------------------------------------------------------
-            // CARTÃO CRÉDITO via Stripe
-            // ----------------------------------------------------------
-            if (metodoAtual === 'card') {
-                if (!stripeInstance) return alert("Gateway Stripe não inicializado. Verifica a chave pública.");
-
-                btn.disabled = true;
-                btn.innerText = "A PROCESSAR COM CRIPTOGRAFIA STRIPE...";
-
-                try {
-                    // Chama a tua Vercel Function para criar o PaymentIntent
-                    const res  = await fetch(STRIPE_ENDPOINT, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ total: total, morada: morada })
-                    });
-                    const data = await res.json();
-
-                    if (data.error) throw new Error(data.error);
-
-                    // Confirma o pagamento no browser com o cartão inserido
-                    const { error: stripeError } = await stripeInstance.confirmCardPayment(data.clientSecret, {
-                        payment_method: { card: stripeCardInput }
-                    });
-
-                    if (stripeError) {
-                        document.getElementById('card-errors').innerText = stripeError.message;
-                        btn.disabled = false;
-                        btn.innerText = "CONFIRMAR E LIQUIDAR TRANSAÇÃO";
-                        return;
-                    }
-
-                    // Sucesso
-                    await registarPedido("cartao");
-                    limparCarrinho();
-                    window.location.href = "/confirmacao";
-
-                } catch (err) {
-                    btn.disabled = false;
-                    btn.innerText = "CONFIRMAR E LIQUIDAR TRANSAÇÃO";
-                    alert("Erro no pagamento: " + err.message);
-                }
-
-            // ----------------------------------------------------------
-            // MB WAY
-            // ⚠️  Substitui este bloco quando tiveres a API configurada
-            // ----------------------------------------------------------
-            } else {
-                const phone = document.getElementById('mbway-phone').value.replace(/\s/g, '');
-                if (phone.length < 9) return alert("Número de telemóvel inválido.");
-
-                btn.disabled = true;
-                btn.innerText = "A EMITIR PEDIDO MB WAY...";
-
-                try {
-                    // TODO: descomentar quando o endpoint estiver pronto
-                    // const res  = await fetch(MBWAY_ENDPOINT, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({ phone: phone, total: total, morada: morada })
-                    // });
-                    // const data = await res.json();
-                    // if (data.error) throw new Error(data.error);
-
-                    // Remove o bloco abaixo quando o endpoint estiver ativo:
-                    await new Promise(r => setTimeout(r, 1000)); // simula latência
-                    await registarPedido("mbway");
-                    limparCarrinho();
-                    window.location.href = "/confirmacao";
-                    return;
-
-                } catch (err) {
-                    btn.disabled = false;
-                    btn.innerText = "CONFIRMAR E LIQUIDAR TRANSAÇÃO";
-                    alert("Erro MB Way: " + err.message);
-                }
-            }
-        }
-
-        function limparCarrinho() {
-            localStorage.setItem("rd_selecionados", JSON.stringify([]));
-            localStorage.removeItem("rd_carrinho_total");
-        }
-
-        async function registarPedido(metodo) {
-            const itens = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
-            const total = localStorage.getItem("rd_carrinho_total") || "0.00";
-            const morada = document.getElementById("rd-morada").value.trim();
-            const agora = new Date();
-            const id = "PED-" + Date.now();
-            const data = agora.toLocaleDateString("pt-PT") + " " + agora.toLocaleTimeString("pt-PT");
-
-            // Gerar código de rastreamento único
-            const codigoRastreamento = "RD-" + Math.floor(1000 + Math.random() * 9000);
-            const pedido = { id, data, morada, itens, total, metodo, estado: "pendente", codigoRastreamento };
-            // Guardar para a página de confirmação
-            sessionStorage.setItem("rd_ultimo_pedido", JSON.stringify(pedido));
-
-            // Guardar no Firebase
+        if (metodoAtual === 'card') {
+            if (!stripeInstance) return alert("Gateway Stripe não inicializado. Verifica a chave pública.");
+            btn.disabled = true; btn.innerText = "A PROCESSAR...";
             try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-                const { getDatabase, ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-                let fbApp;
-                try { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }, "pedidos-app"); }
-                catch(e) { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }); }
-                const db = getDatabase(fbApp);
-                await set(ref(db, "pedidos/" + id), pedido);
-            } catch(e) { console.warn("Firebase:", e); }
-
-            // Enviar WhatsApp
-            const listaItens = itens.map(i => "  - " + i.qtd + "x " + i.nome + " (" + (i.preco * i.qtd).toFixed(2) + "€)").join("\n");
-            const msg = "*🚚 NOVO PEDIDO RD LOGISTICS*\n"
-                + "━━━━━━━━━━━━━━━━━━━━\n"
-                + "📦 *Pedido:* " + id + "\n"
-                + "📅 *Data:* " + data + "\n"
-                + "💳 *Pagamento:* " + metodo.toUpperCase() + "\n"
-                + "━━━━━━━━━━━━━━━━━━━━\n"
-                + "🛒 *Materiais:*\n" + listaItens + "\n"
-                + "━━━━━━━━━━━━━━━━━━━━\n"
-                + "💰 *TOTAL: " + total + "€*\n"
-                + "📍 *Morada:* " + morada;
-
-            window.open("https://wa.me/351963155090?text=" + encodeURIComponent(msg), "_blank");
+                const res = await fetch(STRIPE_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ total, morada }) });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                const { error: stripeError } = await stripeInstance.confirmCardPayment(data.clientSecret, { payment_method: { card: stripeCardInput } });
+                if (stripeError) { document.getElementById('card-errors').innerText = stripeError.message; btn.disabled = false; btn.innerText = "CONFIRMAR E LIQUIDAR TRANSAÇÃO"; return; }
+                await registarPedido("cartao"); limparCarrinho(); window.location.href = "/confirmacao";
+            } catch (err) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-lock"></i> CONFIRMAR E LIQUIDAR TRANSAÇÃO'; alert("Erro: " + err.message); }
+        } else {
+            const phone = document.getElementById('mbway-phone').value.replace(/\s/g, '');
+            if (phone.length < 9) return alert("Número de telemóvel inválido.");
+            btn.disabled = true; btn.innerText = "A EMITIR PEDIDO MB WAY...";
+            try {
+                await new Promise(r => setTimeout(r, 1000));
+                await registarPedido("mbway"); limparCarrinho(); window.location.href = "/confirmacao";
+            } catch (err) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-lock"></i> CONFIRMAR E LIQUIDAR TRANSAÇÃO'; alert("Erro MB Way: " + err.message); }
         }
+    }
 
-        carregarDadosCheckout();
-    </script>
+    function limparCarrinho() { localStorage.setItem("rd_selecionados", JSON.stringify([])); localStorage.removeItem("rd_carrinho_total"); }
 
-<footer style="background: #050505; border-top: 2px solid #FF0000; padding: 50px 40px 20px 40px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
-    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #111; padding-bottom: 40px;">
+    async function registarPedido(metodo) {
+        const itens = JSON.parse(localStorage.getItem("rd_selecionados")) || [];
+        const total = localStorage.getItem("rd_carrinho_total") || "0.00";
+        const morada = document.getElementById("rd-morada").value.trim();
+        const agora = new Date();
+        const id = "PED-" + Date.now();
+        const data = agora.toLocaleDateString("pt-PT") + " " + agora.toLocaleTimeString("pt-PT");
+        const codigoRastreamento = "RD-" + Math.floor(1000 + Math.random() * 9000);
+        const pedido = { id, data, morada, itens, total, metodo, estado: "pendente", codigoRastreamento };
+        sessionStorage.setItem("rd_ultimo_pedido", JSON.stringify(pedido));
+        try {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+            const { getDatabase, ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+            let fbApp;
+            try { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }, "pedidos-app"); }
+            catch(e) { fbApp = initializeApp({ apiKey: "AIzaSyCz_Yn767Tsqsjp1leUFuN3jb_Kcl0_Euc", authDomain: "rd-logistics-e5688.firebaseapp.com", databaseURL: "https://rd-logistics-e5688-default-rtdb.europe-west1.firebasedatabase.app", projectId: "rd-logistics-e5688", storageBucket: "rd-logistics-e5688.firebasestorage.app", messagingSenderId: "1037729646118", appId: "1:1037729646118:web:339ef24a80016c21be08e7" }); }
+            const db = getDatabase(fbApp);
+            await set(ref(db, "pedidos/" + id), pedido);
+        } catch(e) { console.warn("Firebase:", e); }
+        const listaItens = itens.map(i => "  - " + i.qtd + "x " + i.nome + " (" + (i.preco * i.qtd).toFixed(2) + "€)").join("\n");
+        const msg = "*🚚 NOVO PEDIDO RD LOGISTICS*\n━━━━━━━━━━━━━━━━━━━━\n📦 *Pedido:* " + id + "\n📅 *Data:* " + data + "\n💳 *Pagamento:* " + metodo.toUpperCase() + "\n━━━━━━━━━━━━━━━━━━━━\n🛒 *Materiais:*\n" + listaItens + "\n━━━━━━━━━━━━━━━━━━━━\n💰 *TOTAL: " + total + "€*\n📍 *Morada:* " + morada;
+        window.open("https://wa.me/351963155090?text=" + encodeURIComponent(msg), "_blank");
+    }
+
+    carregarDadosCheckout();
+</script>
+
+<footer style="background: #1a1a1a; border-top: 2px solid #CC0000; padding: 50px 40px 20px; margin-top: 80px; font-family: 'Urbanist', sans-serif; color: #fff;">
+    <div style="max-width: 1400px; margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #333; padding-bottom: 40px;">
         <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #FF0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">
-                A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos. Operamos com uma infraestrutura inteligente e encriptada para garantir o fornecimento cirúrgico de materiais industriais, pladur e insumos de alta engenharia diretamente no coração da sua obra.
-            </p>
+            <h4 style="font-family: 'Orbitron'; color: #CC0000; font-size: 1.3rem; margin: 0 0 15px 0; letter-spacing: 1px;">RD LOGISTICS</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 0;">A Referência Determinante no setor de distribuição técnica e logística de sistemas construtivos.</p>
         </div>
         <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #00d2ff; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
-            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                Plataforma Logística Industrial RD<br>
-                Rua de Santa Catarina, Pavilhão 400<br>
-                4000-443 Porto, Portugal<br>
-                <span style="color: #fff; font-weight: bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span>
-            </p>
+            <h4 style="font-family: 'Orbitron'; color: #fff; font-size: 1.1rem; margin: 0 0 15px 0;"><i class="fa-solid fa-industry"></i> Sede Central</h4>
+            <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; margin: 0;">Plataforma Logística Industrial RD<br>Rua de Santa Catarina, Pavilhão 400<br>4000-443 Porto, Portugal<br><span style="color:#fff; font-weight:bold; font-family:'Orbitron'; font-size:0.85rem;"><i class="fa-solid fa-envelope"></i> suporte@rdlogistics.pt</span></p>
         </div>
         <div>
-            <h4 style="font-family: 'Orbitron', sans-serif; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
+            <h4 style="font-family: 'Orbitron'; color: #25D366; font-size: 1.1rem; margin: 0 0 15px 0;"><i class="fa-solid fa-circle-nodes"></i> Conexões Digitais</h4>
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <a href="https://facebook.com" target="_blank" style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#FF0000';this.style.color='#FF0000'" onmouseout="this.style.borderColor='#222';this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/rd.pladur?utm_source=qr" target="_blank" style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#00d2ff';this.style.color='#00d2ff'" onmouseout="this.style.borderColor='#222';this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://linkedin.com" target="_blank" style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#25D366';this.style.color='#25D366'" onmouseout="this.style.borderColor='#222';this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="https://facebook.com" target="_blank" style="width:40px;height:40px;background:#222;border:1px solid #333;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#CC0000';this.style.color='#CC0000'" onmouseout="this.style.borderColor='#333';this.style.color='white'"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/rd.pladur?utm_source=qr" target="_blank" style="width:40px;height:40px;background:#222;border:1px solid #333;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#CC0000';this.style.color='#CC0000'" onmouseout="this.style.borderColor='#333';this.style.color='white'"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" style="width:40px;height:40px;background:#222;border:1px solid #333;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1.1rem;" onmouseover="this.style.borderColor='#25D366';this.style.color='#25D366'" onmouseout="this.style.borderColor='#333';this.style.color='white'"><i class="fa-brands fa-linkedin-in"></i></a>
             </div>
             <span style="font-size: 0.8rem; color: #555; font-family: 'Orbitron'; display: block;">SISTEMA ENCRIPTADO END-TO-END</span>
         </div>
     </div>
-    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
+    <div style="max-width: 1400px; margin: auto; padding-top: 20px; display: flex; justify-content: space-between; font-size: 0.85rem; color: #555; font-family: 'Orbitron';">
         <span>© 2026 RD Logistics. Todos os direitos reservados.</span>
         <span>Licença de Operação Logística Certificada nº 44102/RD</span>
     </div>
